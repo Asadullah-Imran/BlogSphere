@@ -14,7 +14,7 @@ export const register = async (req, res) => {
     });
 
     // Send Verification Email Asynchronously
-    sendVerificationEmail(user);
+    // sendVerificationEmail(user);
 
     res.status(201).json({
       success: true,
