@@ -1,5 +1,7 @@
 // import React from 'react';
 
+import { Link } from "react-router-dom";
+
 const HomePage = () => {
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen text-cusPrimaryColor dark:text-cusSecondaryLightColor p-4">
@@ -16,6 +18,12 @@ const HomePage = () => {
           <p className="text-gray-600 dark:text-cusSecondaryLightColor">
             Post excerpt goes here...
           </p>
+          <Link
+            to="/login"
+            className="bg-cusPrimaryColor text-white p-2 rounded dark:bg-cusSecondaryColor"
+          >
+            Menu
+          </Link>
         </div>
         {/* Add more post cards here */}
       </div>
