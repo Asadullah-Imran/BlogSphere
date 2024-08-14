@@ -52,6 +52,12 @@ const sendVerificationEmail = async (user) => {
     // Optionally: Retry logic or queue the email to be sent later
   }
 };
-export const getMessage = async (req, res) => {
-  res.status(200).json({ success: true, message: "Welcome to the test route" });
+export const getUser = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ success: true, users });
+  } catch (err) {
+    console.error("Error getting users:", err);
+    res.status(400).json({ success: false, message: err.message });
+  }
 };
