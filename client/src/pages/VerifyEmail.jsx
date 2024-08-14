@@ -1,6 +1,6 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { verifyEmail } from "../services/authenticationsServices.js";
 
 const VerifyEmail = () => {
   const location = useLocation();
@@ -14,9 +14,8 @@ const VerifyEmail = () => {
 
     const verifyToken = async () => {
       try {
-        const response = await axios.get(
-          `/api/auth/verify-email?id=${id}&token=${token}`
-        );
+        const response = await verifyEmail(id, token);
+
         setMessage(response.data.message);
         if (response.data.success) {
           setIsVerified(true); // Set isVerified to true if verification is successful
