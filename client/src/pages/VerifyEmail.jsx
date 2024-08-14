@@ -7,6 +7,7 @@ const VerifyEmail = () => {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
   const [isVerified, setIsVerified] = useState(false); // State to track if email is verified
+  const [isLoading, setIsLoading] = useState(true); // State to track loading state
 
   useEffect(() => {
     const token = new URLSearchParams(location.search).get("token");
@@ -22,11 +23,21 @@ const VerifyEmail = () => {
         }
       } catch (err) {
         setMessage("Verification failed. Please try again.");
+      } finally {
+        setIsLoading(false); // Set loading state to false after verification attempt
       }
     };
 
     verifyToken();
   }, [location]);
+
+  if (isLoading) {
+    return (
+      <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen flex items-center justify-center p-4">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-cusPrimaryColor"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen flex items-center justify-center p-4">
