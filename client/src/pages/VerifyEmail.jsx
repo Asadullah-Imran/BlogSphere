@@ -21,7 +21,8 @@ const VerifyEmail = () => {
           setIsVerified(true); // Set isVerified to true if verification is successful
         }
       } catch (err) {
-        setMessage("Verification failed. Please try again.");
+        const errorMessage = err.response?.data?.message;
+        setMessage(errorMessage || "Verification failed. Please try again.");
       }
     };
 
