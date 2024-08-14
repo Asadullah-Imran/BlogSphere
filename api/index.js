@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import authRoutes from "./routes/auth.routes.js";
+import testRoutes from "./routes/test.routes.js";
 
 // Configure dotenv
 dotenv.config();
@@ -18,6 +19,7 @@ mongoose
 
 // Define routes
 app.use("/api/auth", authRoutes);
+app.use("/api/test", testRoutes);
 app.get("/", (req, res) => res.send("Hello World"));
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
