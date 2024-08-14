@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { register } from "../services/authenticationsServices.js";
 const Register = () => {
   const [formData, setFormData] = useState({
     fullname: "",
@@ -15,11 +16,11 @@ const Register = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // try {
-    //   await register(formData);
-    // } catch (error) {
-    //   console.log(error);
-    // }
+    try {
+      await register(formData);
+    } catch (error) {
+      console.log(error);
+    }
     console.log("Form submitted");
     notify("Form submitted");
     console.log(formData);
