@@ -1,4 +1,4 @@
-import crypto from "crypto";
+// import crypto from "crypto";
 import nodemailer from "nodemailer";
 import User from "../models/user.model.js";
 
@@ -10,7 +10,8 @@ export const register = async (req, res) => {
       fullname,
       email,
       password,
-      verificationToken: crypto.randomBytes(32).toString("hex"),
+      // verificationToken: crypto.randomBytes(32).toString("hex"),
+      verificationToken: "adsnfkjh23io5hrwqio436h23kj5hntsdafoi943",
     });
 
     // Send Verification Email Asynchronously
