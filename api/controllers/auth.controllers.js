@@ -93,3 +93,7 @@ export const verifyEmail = async (req, res) => {
     return res.status(400).json({ success: false, message: err.message });
   }
 };
+
+export const getting = async (req, res) => {
+  res.status(200).json({ success: true, message: "getting" });
+};
