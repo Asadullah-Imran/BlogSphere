@@ -9,11 +9,13 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+// Set up CORS options
 const corsOptions = {
-  origin: ["http://localhost:5173", "https://likhalikhi.vercel.app/"],
+  origin: ["https://likhalikhi.vercel.app"], // Allow only your frontend domain
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
