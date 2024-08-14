@@ -51,3 +51,6 @@ const sendVerificationEmail = async (user) => {
     // Optionally: Retry logic or queue the email to be sent later
   }
 };
+export const getMessage = async (req, res) => {
+  res.status(200).json({ success: true, message: "Welcome to the test route" });
+};
