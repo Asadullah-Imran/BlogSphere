@@ -1,3 +1,4 @@
+import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
@@ -8,7 +9,12 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-
+const corsOptions = {
+  origin: ["http://localhost:5173", "https://likhalikhi.vercel.app/"], // Replace with your actual frontend URLs
+  optionsSuccessStatus: 200, // Some legacy browsers choke on 204
+  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 mongoose
