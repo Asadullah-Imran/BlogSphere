@@ -21,13 +21,13 @@ const Register = () => {
       console.log("register response is\n response---> ", response);
       if (response?.success) {
         notify(response?.message);
+        console.log("Form submitted");
+        notify("Form submitted");
+        console.log(formData);
       }
     } catch (error) {
       console.log(error);
     }
-    console.log("Form submitted");
-    notify("Form submitted");
-    console.log(formData);
   };
 
   return (
