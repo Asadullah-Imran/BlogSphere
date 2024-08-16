@@ -17,7 +17,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await register(formData);
+      const response = await register(formData);
+      console.log("register response is\n response---> ", response);
+      if (response?.success) {
+        notify(response?.message);
+      }
     } catch (error) {
       console.log(error);
     }

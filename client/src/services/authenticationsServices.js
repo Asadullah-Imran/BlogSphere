@@ -2,8 +2,9 @@ import axios from "axios";
 
 const API_URL = "https://blog-app-two-flax.vercel.app/api/auth/";
 
-export const register = (credentials) =>
-  axios.post(`${API_URL}register`, credentials);
+export const register = (credentials) => {
+  return axios.post(`${API_URL}register`, credentials);
+};
 export const login = (credentials) => {
   return axios.post(`${API_URL}login`, credentials);
 };

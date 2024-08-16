@@ -1,46 +1,113 @@
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import User from "../models/user.model.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-export const register = async (req, res) => {
+// export const register = async (req, res) => {
+//   const { fullname, email, password } = req.body;
+
+//   try {
+//     const user = await User.create({
+//       fullname,
+//       email,
+//       password,
+//       verificationToken: crypto.randomBytes(32).toString("hex"),
+//     });
+
+//     //Send Verification mail
+
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS,
+//       },
+//     });
+
+//     const mailOptions = {
+//       from: process.env.EMAIL_USER,
+//       to: user.email,
+//       subscribe: "Account Verification",
+//       text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
+//     };
+
+//     await transporter.sendMail(mailOptions);
+
+//     res.status(201).json({
+//       success: true,
+//       message:
+//         "User created successfully. Please verify your email to activate your account.",
+//     });
+//   } catch (err) {
+//     res.status(400).json({ success: false, message: err.message });
+//   }
+// };
+
+export const register = asyncHandler(async (req, res) => {
   const { fullname, email, password } = req.body;
 
-  try {
-    const user = await User.create({
-      fullname,
-      email,
-      password,
-      verificationToken: crypto.randomBytes(32).toString("hex"),
-    });
-
-    //Send Verification mail
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
-
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: user.email,
-      subscribe: "Account Verification",
-      text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    res.status(201).json({
-      success: true,
-      message:
-        "User created successfully. Please verify your email to activate your account.",
-    });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+  if (!fullname || !email || !password) {
+    throw new ApiError(400, "Please fill all fields");
   }
-};
+
+  //check user already existed or not
+  const exitedUser = await User.findOne({ email });
+  if (exitedUser) {
+    throw new ApiError(400, "User already existed with this email");
+  }
+
+  const user = await User.create({
+    fullname,
+    email,
+    password,
+    verificationToken: crypto.randomBytes(32).toString("hex"),
+  });
+
+  //check user created or not
+
+  if (!user) {
+    throw new ApiError(400, "Failed to create user");
+  }
+
+  //Send Verification mail
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subscribe: "Account Verification",
+    text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+
+  // res.status(201).json({
+  //   success: true,
+  //   message:
+  //     "User created successfully. Please verify your email to activate your account.",
+  // });
+
+  // finally send the response
+  // const { verificationToken, password: userPassword, ...other } = user;
+  return res
+    .status(201)
+    .json(
+      new ApiResponse(
+        201,
+        null,
+        "User created successfully. Please verify your email to activate your account."
+      )
+    );
+});
 
 // verify email
 
