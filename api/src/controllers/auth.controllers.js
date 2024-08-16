@@ -5,46 +5,6 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-// export const register = async (req, res) => {
-//   const { fullname, email, password } = req.body;
-
-//   try {
-//     const user = await User.create({
-//       fullname,
-//       email,
-//       password,
-//       verificationToken: crypto.randomBytes(32).toString("hex"),
-//     });
-
-//     //Send Verification mail
-
-//     const transporter = nodemailer.createTransport({
-//       service: "gmail",
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
-
-//     const mailOptions = {
-//       from: process.env.EMAIL_USER,
-//       to: user.email,
-//       subscribe: "Account Verification",
-//       text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
-//     };
-
-//     await transporter.sendMail(mailOptions);
-
-//     res.status(201).json({
-//       success: true,
-//       message:
-//         "User created successfully. Please verify your email to activate your account.",
-//     });
-//   } catch (err) {
-//     res.status(400).json({ success: false, message: err.message });
-//   }
-// };
-
 export const register = asyncHandler(async (req, res) => {
   const { fullname, email, password } = req.body;
 
@@ -73,31 +33,8 @@ export const register = asyncHandler(async (req, res) => {
 
   //Send Verification mail
 
-  const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  await verificationEmail(user);
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: user.email,
-    subscribe: "Account Verification",
-    text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
-  };
-
-  await transporter.sendMail(mailOptions);
-
-  // res.status(201).json({
-  //   success: true,
-  //   message:
-  //     "User created successfully. Please verify your email to activate your account.",
-  // });
-
-  // finally send the response
-  // const { verificationToken, password: userPassword, ...other } = user;
   return res
     .status(201)
     .json(
@@ -108,6 +45,23 @@ export const register = asyncHandler(async (req, res) => {
       )
     );
 });
+
+const verificationEmail = async (user) => {
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: user.email,
+    subject: "Account Verification",
+    text: `Please click the link below to verify your account ${process.env.CLIENT_URL}/verify-email?id=${user._id}&token=${user.verificationToken}`,
+  };
+  await transporter.sendMail(mailOptions);
+};
 
 // verify email
 
@@ -160,3 +114,91 @@ export const verifyEmail = async (req, res) => {
     return res.status(400).json({ success: false, message: err.message });
   }
 };
+
+const generateAccessAndRefreshTokens = async (userID) => {
+  try {
+    const user = await User.findById(userID);
+    const accessToken = await user.generateAccessToken();
+    const refreshToken = await user.generateRefreshToken();
+
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
+
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Failed to generate access and refresh token");
+  }
+};
+
+export const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new ApiError(400, "Please fill all fields");
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(400, "User not found");
+  }
+
+  const isMatch = await user.isPasswordCorrect(password);
+
+  if (!isMatch) {
+    throw new ApiError(400, "Incorrect password");
+  }
+
+  if (!user.isVerified) {
+    await verificationEmail(user);
+    throw new ApiError(
+      400,
+      "A email sent to your email Please verify your email to login"
+    );
+  }
+
+  //all check are done avobe now we will generate access and refresh token
+
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken, options)
+    .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
+});
+
+const logoutUser = asyncHandler(async (req, res) => {
+  //todos
+  //find user
+  //remove refresh and access token
+
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  return res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
