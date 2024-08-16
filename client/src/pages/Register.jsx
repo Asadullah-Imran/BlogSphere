@@ -26,7 +26,18 @@ const Register = () => {
         console.log(formData);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Error in registration:", error);
+
+      // Display error message from the API response
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        notify(error.response.data.message); // Show the specific error message
+      } else {
+        notify("An unexpected error occurred. Please try again."); // Generic error message
+      }
     }
   };
 
