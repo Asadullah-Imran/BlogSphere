@@ -60,6 +60,8 @@ const Register = () => {
   };
 
   const handleResend = () => {
+    //%%%%%%%%%%%%later on%%%%%%%%%%%%%%%%%%
+    //Here we will handle the resend verification link operation later on
     notify("Verification link resent. Please check your email.");
     setTimer(180);
     startTimer();
