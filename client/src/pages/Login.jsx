@@ -21,7 +21,7 @@ const Login = () => {
     try {
       const response = await login(formData); // Call the login service
       if (response.data.success) {
-        localStorage.setItem("token", response.data.token); // Store JWT token
+        localStorage.setItem("token", response.data.refreshToken); // Store JWT token
         navigate("/"); // Redirect to homepage on success
       } else {
         setError(response.data.message); // Set error message
