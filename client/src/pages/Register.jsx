@@ -19,8 +19,8 @@ const Register = () => {
     try {
       const response = await register(formData);
       console.log("register response is\n response---> ", response);
-      if (response?.success) {
-        notify(response?.message);
+      if (response?.data?.success) {
+        notify(response?.data?.message);
         console.log("Form submitted");
         notify("Form submitted");
         console.log(formData);
