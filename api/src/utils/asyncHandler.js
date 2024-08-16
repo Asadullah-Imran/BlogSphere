@@ -3,14 +3,30 @@
 // we can use this asyncHandler to wrap the async function and it will handle the error for us
 // and pass it to the global error handler middleware
 
-const asyncHandler = (fn) => {
-  return async (req, res, next) => {
-    try {
-      await fn(req, res, next);
-    } catch (error) {
-      next(error);
+// const asyncHandler = (fn) => {
+//   return async (req, res, next) => {
+//     try {
+//       await fn(req, res, next);
+//     } catch (error) {
+//       next(error);
+//     }
+//   };
+// };
+
+import { ApiError } from "./ApiError.js";
+
+// asyncHandler function definition
+const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch((err) => {
+    if (err instanceof ApiError) {
+      res.status(err.statusCode).json({ success: false, message: err.message });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "An unexpected error occurred. Please try again.",
+      });
     }
-  };
+  });
 };
 
 export { asyncHandler };
