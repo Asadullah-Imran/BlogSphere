@@ -117,8 +117,12 @@ export const verifyEmail = async (req, res) => {
 
 const generateAccessAndRefreshTokens = async (userID) => {
   try {
+    console.log("enter in try block");
+
     const user = await User.findById(userID);
+    // console.log(user);
     const accessToken = await user.generateAccessToken();
+    console.log(accessToken);
     const refreshToken = await user.generateRefreshToken();
 
     user.refreshToken = refreshToken;
