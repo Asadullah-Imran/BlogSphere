@@ -194,32 +194,6 @@ const tokenOption = (tokenExpiry) => {
   };
 };
 
-// export const logout = asyncHandler(async (req, res) => {
-//   //todos
-//   //find user
-//   //remove refresh and access token
-
-//   await User.findByIdAndUpdate(
-//     req.user._id,
-//     {
-//       $set: { refreshToken: undefined },
-//     },
-//     {
-//       new: true,
-//     }
-//   );
-
-//   const options = {
-//     httpOnly: true,
-//     secure: true,
-//   };
-
-//   return res
-//     .status(200)
-//     .clearCookie("accessToken", options)
-//     .clearCookie("refreshToken", options)
-//     .json(new ApiResponse(200, {}, "User logged out successfully"));
-// });
 export const logout = asyncHandler(async (req, res) => {
   //todos
   //find user
@@ -235,26 +209,9 @@ export const logout = asyncHandler(async (req, res) => {
   //   }
   // );
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
-
   return res
     .status(200)
-    .clearCookie("accessToken", {
-      httpOnly: true,
-      secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
-      maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
-      domain: "likhalikhi.vercel.app", // Set the correct domain
-    })
-    .clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
-      maxAge: refreshTokenExpiry, // Set cookie expiration to 1 day
-      domain: "likhalikhi.vercel.app", // Set the correct domain
-    })
+    .clearCookie("accessToken", tokenOption(accessTokenExpiry))
+    .clearCookie("refreshToken", tokenOption(refreshTokenExpiry))
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
