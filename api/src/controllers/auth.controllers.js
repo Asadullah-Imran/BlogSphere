@@ -169,9 +169,10 @@ export const login = asyncHandler(async (req, res) => {
   const loggedInUser = await User.findById(user._id).select("-password ");
   const options = {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: true, // Ensure this is true in production
+    sameSite: "lax", // or "strict" depending on your needs
   };
+
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
