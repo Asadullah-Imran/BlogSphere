@@ -179,19 +179,20 @@ export const login = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
+    .status(200)
     .cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: true, // Ensure this is true in production
       sameSite: "none", // or "strict" depending on your needs
       maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
-      domain: process.env.CLIENT_URL, // Ensure this matches your frontend domain
+      domain: "likhalikhi.vercel.app", // Set the correct domain
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true, // Ensure this is true in production
       sameSite: "none", // or "strict" depending on your needs
       maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
-      domain: process.env.CLIENT_URL, // Ensure this matches your frontend domain
+      domain: "likhalikhi.vercel.app", // Set the correct domain
     })
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
