@@ -182,11 +182,15 @@ export const login = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, {
       httpOnly: true, //
-      secure: false, // Ensure this is true in production
+      secure: true, // Ensure this is true in production
+      sameSite: "lax", // or "strict" depending on your needs
+      maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
     })
     .cookie("refreshToken", refreshToken, {
       httpOnly: true, //
-      secure: false, // Ensure this is true in production
+      secure: true, // Ensure this is true in production
+      sameSite: "lax", // or "strict" depending on your needs
+      maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
     })
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
