@@ -7,7 +7,8 @@ export const register = (credentials) => {
 };
 export const login = (credentials) => {
   return axios.post(`${API_URL}login`, credentials, {
-    withCredentials: true, // This ensures that cookies are sent and received
+    withCredentials: true,
+    credentials: "include", // This ensures that cookies are sent and received
   });
 };
 export const verifyEmail = (id, token) => {
