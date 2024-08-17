@@ -26,6 +26,9 @@ import authRoutes from "./routes/auth.routes.js";
 // Define routes
 app.use("/api/v1/auth", authRoutes);
 
-app.get("/", (req, res) => res.send("SERVER IS WORKING BRO...!"));
+app.get("/", (req, res) => {
+  const cookies = req.cookies;
+  res.send(`SERVER IS WORKING BRO...! Cookies: ${JSON.stringify(cookies)}`);
+});
 
 export default app;
