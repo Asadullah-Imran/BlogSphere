@@ -5,6 +5,10 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
+// Assuming these are your token expiration times
+const accessTokenExpiry = 24 * 60 * 60 * 1000; // 1 day in milliseconds
+const refreshTokenExpiry = 10 * 24 * 60 * 60 * 1000; // 10 days in milliseconds
+
 export const register = asyncHandler(async (req, res) => {
   const { fullname, email, password } = req.body;
 
@@ -167,16 +171,26 @@ export const login = asyncHandler(async (req, res) => {
     user._id
   );
   const loggedInUser = await User.findById(user._id).select("-password ");
-  const options = {
-    httpOnly: true,
-    secure: true, // Ensure this is true in production
-    sameSite: "lax", // or "strict" depending on your needs
-  };
+  // const options = {
+  //   httpOnly: true,
+  //   secure: true, // Ensure this is true in production
+  //   sameSite: "lax", // or "strict" depending on your needs
+  // };
 
   return res
     .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true, // Ensure this is true in production
+      sameSite: "lax", // or "strict" depending on your needs
+      maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true, // Ensure this is true in production
+      sameSite: "lax", // or "strict" depending on your needs
+      maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
+    })
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
