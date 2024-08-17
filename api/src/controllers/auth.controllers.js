@@ -181,16 +181,16 @@ export const login = asyncHandler(async (req, res) => {
     .status(200)
     .status(200)
     .cookie("accessToken", accessToken, {
-      httpOnly: true,
+      httpOnly: true, //
       secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
+      sameSite: "lax", // or "strict" depending on your needs
       maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
       domain: "likhalikhi.vercel.app", // Set the correct domain
     })
     .cookie("refreshToken", refreshToken, {
-      httpOnly: true,
+      httpOnly: true, //
       secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
+      sameSite: "lax", // or "strict" depending on your needs
       maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
       domain: "likhalikhi.vercel.app", // Set the correct domain
     })
