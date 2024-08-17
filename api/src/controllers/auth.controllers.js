@@ -197,20 +197,46 @@ export const login = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
-const logoutUser = asyncHandler(async (req, res) => {
+// export const logout = asyncHandler(async (req, res) => {
+//   //todos
+//   //find user
+//   //remove refresh and access token
+
+//   await User.findByIdAndUpdate(
+//     req.user._id,
+//     {
+//       $set: { refreshToken: undefined },
+//     },
+//     {
+//       new: true,
+//     }
+//   );
+
+//   const options = {
+//     httpOnly: true,
+//     secure: true,
+//   };
+
+//   return res
+//     .status(200)
+//     .clearCookie("accessToken", options)
+//     .clearCookie("refreshToken", options)
+//     .json(new ApiResponse(200, {}, "User logged out successfully"));
+// });
+export const logout = asyncHandler(async (req, res) => {
   //todos
   //find user
   //remove refresh and access token
 
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: { refreshToken: undefined },
-    },
-    {
-      new: true,
-    }
-  );
+  // await User.findByIdAndUpdate(
+  //   req.user._id,
+  //   {
+  //     $set: { refreshToken: undefined },
+  //   },
+  //   {
+  //     new: true,
+  //   }
+  // );
 
   const options = {
     httpOnly: true,
@@ -219,7 +245,19 @@ const logoutUser = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", options)
-    .clearCookie("refreshToken", options)
+    .clearCookie("accessToken", {
+      httpOnly: true,
+      secure: true, // Ensure this is true in production
+      sameSite: "none", // or "strict" depending on your needs
+      maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
+      domain: "likhalikhi.vercel.app", // Set the correct domain
+    })
+    .clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: true, // Ensure this is true in production
+      sameSite: "none", // or "strict" depending on your needs
+      maxAge: refreshTokenExpiry, // Set cookie expiration to 1 day
+      domain: "likhalikhi.vercel.app", // Set the correct domain
+    })
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });

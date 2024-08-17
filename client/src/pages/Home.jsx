@@ -1,8 +1,22 @@
 // import React from 'react';
 
 import { Link } from "react-router-dom";
+import { logout } from "../services/authenticationsServices.js";
 
 const HomePage = () => {
+  const handleLogout = async () => {
+    try {
+      const res = await logout();
+      console.log(res.data);
+      // Redirect the user to the login page or home page after logging out
+      console.log("Logout success");
+      // window.location.href = "/login"; // Adjust the redirection path as needed
+    } catch (error) {
+      console.error("Logout failed:", error);
+      // Optionally, show an error message to the user
+    }
+  };
+
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen text-cusPrimaryColor dark:text-cusSecondaryLightColor p-4">
       <header className="flex justify-between items-center mb-4">
@@ -21,9 +35,13 @@ const HomePage = () => {
           <Link
             to="/login"
             className="bg-cusPrimaryColor text-white p-2 rounded dark:bg-cusSecondaryColor"
+          ></Link>
+          <button
+            onClick={handleLogout}
+            className="bg-cusPrimaryColor text-white p-2 rounded dark:bg-cusSecondaryColor"
           >
-            Menu
-          </Link>
+            Logout
+          </button>
         </div>
         {/* Add more post cards here */}
       </div>
