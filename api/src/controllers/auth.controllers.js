@@ -185,13 +185,19 @@ export const login = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
-const tokenOption = (tokenExpiry) => {
-  return {
+const tokenOption = (tokenExpiry, clear = false) => {
+  const options = {
     httpOnly: true,
     secure: true, // Ensure this is true in production
     sameSite: "none", // or "strict" depending on your needs
-    maxAge: tokenExpiry, // Set cookie expiration to 1 day
+    maxAge: tokenExpiry, // Set cookie expiration
   };
+
+  if (clear) {
+    options.domain = "blog-app-eta-orcin.vercel.app"; // Include the domain attribute when clearing cookies
+  }
+
+  return options;
 };
 
 export const logout = asyncHandler(async (req, res) => {
@@ -211,7 +217,7 @@ export const logout = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .clearCookie("accessToken", tokenOption(accessTokenExpiry))
-    .clearCookie("refreshToken", tokenOption(refreshTokenExpiry))
+    .clearCookie("accessToken", tokenOption(accessTokenExpiry, true))
+    .clearCookie("refreshToken", tokenOption(refreshTokenExpiry, true))
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
