@@ -138,64 +138,64 @@ const generateAccessAndRefreshTokens = async (userID) => {
   }
 };
 
-export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+// export const login = asyncHandler(async (req, res) => {
+//   const { email, password } = req.body;
 
-  if (!email || !password) {
-    throw new ApiError(400, "Please fill all fields");
-  }
+//   if (!email || !password) {
+//     throw new ApiError(400, "Please fill all fields");
+//   }
 
-  const user = await User.findOne({ email });
+//   const user = await User.findOne({ email });
 
-  if (!user) {
-    throw new ApiError(400, "User not found");
-  }
+//   if (!user) {
+//     throw new ApiError(400, "User not found");
+//   }
 
-  const isMatch = await user.isPasswordCorrect(password);
+//   const isMatch = await user.isPasswordCorrect(password);
 
-  if (!isMatch) {
-    throw new ApiError(400, "Incorrect password");
-  }
+//   if (!isMatch) {
+//     throw new ApiError(400, "Incorrect password");
+//   }
 
-  if (!user.isVerified) {
-    await verificationEmail(user);
-    throw new ApiError(
-      400,
-      "A email sent to your email Please verify your email to login"
-    );
-  }
+//   if (!user.isVerified) {
+//     await verificationEmail(user);
+//     throw new ApiError(
+//       400,
+//       "A email sent to your email Please verify your email to login"
+//     );
+//   }
 
-  //all check are done avobe now we will generate access and refresh token
+//   //all check are done avobe now we will generate access and refresh token
 
-  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    user._id
-  );
-  const loggedInUser = await User.findById(user._id).select("-password ");
-  // const options = {
-  //   httpOnly: true,
-  //   secure: true, // Ensure this is true in production
-  //   sameSite: "lax", // or "strict" depending on your needs
-  // };
+//   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+//     user._id
+//   );
+//   const loggedInUser = await User.findById(user._id).select("-password ");
+//   // const options = {
+//   //   httpOnly: true,
+//   //   secure: true, // Ensure this is true in production
+//   //   sameSite: "lax", // or "strict" depending on your needs
+//   // };
 
-  return res
-    .status(200)
-    .status(200)
-    .cookie("accessToken", accessToken, {
-      httpOnly: true, //
-      secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
-      maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
-      domain: ".vercel.app", // Set the correct domain
-    })
-    .cookie("refreshToken", refreshToken, {
-      httpOnly: true, //
-      secure: true, // Ensure this is true in production
-      sameSite: "none", // or "strict" depending on your needs
-      maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
-      // domain: "vercel.app", // Set the correct domain
-    })
-    .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
-});
+//   return res
+//     .status(200)
+//     .status(200)
+//     .cookie("accessToken", accessToken, {
+//       httpOnly: true, //
+//       secure: true, // Ensure this is true in production
+//       sameSite: "none", // or "strict" depending on your needs
+//       maxAge: accessTokenExpiry, // Set cookie expiration to 1 day
+//       domain: ".vercel.app", // Set the correct domain
+//     })
+//     .cookie("refreshToken", refreshToken, {
+//       httpOnly: true, //
+//       secure: true, // Ensure this is true in production
+//       sameSite: "none", // or "strict" depending on your needs
+//       maxAge: refreshTokenExpiry, // Set cookie expiration to 10 days
+//       // domain: "vercel.app", // Set the correct domain
+//     })
+//     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
+// });
 
 // export const logout = asyncHandler(async (req, res) => {
 //   //todos
@@ -260,4 +260,59 @@ export const logout = asyncHandler(async (req, res) => {
       domain: "likhalikhi.vercel.app", // Set the correct domain
     })
     .json(new ApiResponse(200, {}, "User logged out successfully"));
+});
+
+export const login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    throw new ApiError(400, "Please fill all fields");
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new ApiError(400, "User not found");
+  }
+
+  const isMatch = await user.isPasswordCorrect(password);
+
+  if (!isMatch) {
+    throw new ApiError(400, "Incorrect password");
+  }
+
+  if (!user.isVerified) {
+    await verificationEmail(user);
+    throw new ApiError(
+      400,
+      "An email has been sent to your email. Please verify your email to log in."
+    );
+  }
+
+  // Generate access and refresh tokens
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    user._id
+  );
+  const loggedInUser = await User.findById(user._id).select("-password");
+
+  // Set cookies with the correct domain, path, and security settings
+  return res
+    .status(200)
+    .cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: accessTokenExpiry,
+      domain: ".vercel.app",
+      path: "/", // Ensure the cookie is available for the entire domain
+    })
+    .cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: refreshTokenExpiry,
+      domain: ".vercel.app",
+      path: "/", // Ensure the cookie is available for the entire domain
+    })
+    .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
