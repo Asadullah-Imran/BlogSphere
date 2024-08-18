@@ -1,9 +1,40 @@
 import axios from "axios";
 
-const API_URL = "/api/posts/";
+// const API_URL = "https://blog-app-eta-orcin.vercel.app/api/v1/";
+// Update the API_URL if you are running the backend locally
+const API_URL = "http://localhost:5000/api/v1/";
 
-export const getPosts = () => axios.get(API_URL);
-export const getPost = (id) => axios.get(`${API_URL}${id}`);
-export const createPost = (post) => axios.post(API_URL, post);
-export const updatePost = (id, post) => axios.put(`${API_URL}${id}`, post);
-export const deletePost = (id) => axios.delete(`${API_URL}${id}`);
+export const createPost = (postData) => {
+  return axios.post(`${API_URL}posts`, postData, {
+    withCredentials: true, // Ensures cookies are sent and received
+  });
+};
+
+export const getPosts = () => {
+  return axios.get(`${API_URL}posts`);
+};
+
+export const getPostById = (postId) => {
+  return axios.get(`${API_URL}posts/${postId}`);
+};
+
+export const updatePost = (postId, updatedData) => {
+  return axios.put(`${API_URL}posts/${postId}`, updatedData, {
+    withCredentials: true, // Ensures cookies are sent and received
+  });
+};
+
+export const deletePost = (postId) => {
+  return axios.delete(`${API_URL}posts/${postId}`, {
+    withCredentials: true, // Ensures cookies are sent and received
+  });
+};
+
+export const getComments = (postId) =>
+  axios.get(`${API_URL}posts/${postId}/comments`);
+export const addComment = (postId, commentData) =>
+  axios.post(`${API_URL}posts/${postId}/comments`, commentData);
+export const getReactions = (postId) =>
+  axios.get(`${API_URL}posts/${postId}/reactions`);
+export const addReaction = (postId, reactionData) =>
+  axios.post(`${API_URL}posts/${postId}/reactions`, reactionData);

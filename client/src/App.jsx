@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import SinglePost from "./pages/SinglePost";
 import VerifyEmail from "./pages/VerifyEmail"; // Adjust the path as needed
 import WritePost from "./pages/WritePost";
+import PrivateRoute from "./utils/PrivateRoute";
 
 const App = () => {
   return (
@@ -22,8 +23,11 @@ const App = () => {
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="posts" element={<Posts />} />
-          <Route path="posts/:id" element={<SinglePost />} />
-          <Route path="create-post" element={<WritePost />} />
+          <Route path="post/:id" element={<SinglePost />} />
+          <Route
+            path="create-post"
+            element={<PrivateRoute element={<WritePost />} />}
+          />
         </Route>
       </Routes>
     </Router>

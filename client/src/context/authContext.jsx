@@ -1,37 +1,49 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { login } from "../services/authenticationsServices.js";
 
 // Create the authentication context
 export const AuthContext = createContext();
 
-// Create the authentication provider component
 export const AuthContextProvider = ({ children }) => {
-  // State to hold the authenticated user
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    // Retrieve user from local storage if available
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : null;
+  });
 
-  // Function to handle user login
+  // Update local storage whenever the user state changes
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
+
   const loginWithContext = async (credentials) => {
-    const res = await login(credentials);
-    setUser(res.data.data.email);
-    console.log("authcontext user set is :", res.data.data.email);
-    return res;
+    try {
+      const res = await login(credentials);
+      console.log("Login response:", res);
+      setUser(res.data.data.email);
+      console.log("User set to:", res.data.data.email);
+      return res;
+    } catch (error) {
+      console.error("Login failed:", error.message);
+      throw error;
+    }
   };
 
-  // Function to handle user logout
   const logoutWithContext = () => {
-    // Perform logout logic here
-    // Clear the authenticated user from the state
     setUser(null);
+    console.log("User logged out");
   };
 
-  // Value object to be provided to consuming components
   const authContextValue = {
     user,
     loginWithContext,
     logoutWithContext,
   };
 
-  // Render the authentication provider with the provided children
   return (
     <AuthContext.Provider value={authContextValue}>
       {children}

@@ -7,7 +7,8 @@ const app = express();
 
 // Set up CORS options
 const corsOptions = {
-  origin: ["https://likhalikhi.vercel.app"], // Allow only your frontend domain
+  // origin: ["https://likhalikhi.vercel.app"], // Allow only your frontend domain
+  origin: ["http://localhost:5173"], // Allow only your frontend domain
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };
@@ -22,9 +23,11 @@ app.use(cookieParser());
 //import  here
 
 import authRoutes from "./routes/auth.routes.js";
+import postRoutes from "./routes/post.routes.js";
 
 // Define routes
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/posts", postRoutes);
 
 app.get("/", (req, res) => {
   const cookies = req.cookies;
