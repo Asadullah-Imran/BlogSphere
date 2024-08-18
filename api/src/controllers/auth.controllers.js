@@ -217,10 +217,12 @@ export const logout = asyncHandler(async (req, res) => {
     // maxAge: tokenExpiry, // Set cookie expiration
   };
 
-  return res
-    .status(200)
-    .cookie("Token", "salam vai", tokenOption(accessTokenExpiry))
-    .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
-    .clearCookie("refreshToken", options)
-    .json(new ApiResponse(200, {}, "User logged out successfully"));
+  return (
+    res
+      .status(200)
+      .cookie("Token", "salam vai", tokenOption(accessTokenExpiry))
+      // .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
+      // .clearCookie("refreshToken", options)
+      .json(new ApiResponse(200, {}, "User logged out successfully"))
+  );
 });
