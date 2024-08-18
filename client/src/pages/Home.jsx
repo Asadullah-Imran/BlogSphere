@@ -18,6 +18,7 @@ const HomePage = () => {
     }
   };
   const { user } = useContext(AuthContext);
+  console.log("user is: ", user);
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen text-cusPrimaryColor dark:text-cusSecondaryLightColor p-4">
       <header className="flex justify-between items-center mb-4">
