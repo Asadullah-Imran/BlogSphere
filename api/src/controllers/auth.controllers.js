@@ -200,29 +200,27 @@ export const logout = asyncHandler(async (req, res) => {
   //find user
   //remove refresh and access token
 
-  // await User.findByIdAndUpdate(
-  //   req.user._id,
-  //   {
-  //     $set: { refreshToken: undefined },
-  //   },
-  //   {
-  //     new: true,
-  //   }
-  // );
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: { refreshToken: undefined },
+    },
+    {
+      new: true,
+    }
+  );
 
   const options = {
     httpOnly: true,
     secure: true, // Ensure this is true in production
     sameSite: "none", // or "strict" depending on your needs
-    // maxAge: tokenExpiry, // Set cookie expiration
   };
 
-  return (
-    res
-      .status(200)
-      // .cookie("Token", "salam vai", options)
-      .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
-      .clearCookie("refreshToken", options)
-      .json(new ApiResponse(200, {}, "User logged out successfully"))
-  );
+  return res
+    .status(200)
+    .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
+    .clearCookie("refreshToken", options)
+    .json(
+      new ApiResponse(200, { user: req.user }, "User logged out successfully")
+    );
 });

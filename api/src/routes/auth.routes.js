@@ -5,12 +5,13 @@ import {
   register,
   verifyEmail,
 } from "../controllers/auth.controllers.js";
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.post("/logout", logout);
+router.post("/logout", verifyJWT, logout);
 router.get("/verify-email", verifyEmail);
 
 export default router;
