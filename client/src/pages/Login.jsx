@@ -22,7 +22,6 @@ const Login = () => {
     try {
       const response = await loginWithContext(formData); // Call the login service
       if (response.data.success) {
-        localStorage.setItem("token", response.data.data.refreshToken); // Store JWT token
         // navigate("/"); // Redirect to homepage on success
         console.log("Login success");
         console.log(response.data.data);
