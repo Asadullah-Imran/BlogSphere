@@ -216,7 +216,7 @@ export const logout = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .cookie("accessToken", "a", tokenOption(1))
-    .cookie("refreshToken", "a", tokenOption(1))
+    .clearCookie("accessToken", tokenOption(0, true)) // Setting maxAge to 0 clears the cookie
+    .clearCookie("refreshToken", tokenOption(0, true))
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
