@@ -184,48 +184,42 @@ export const login = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
-const tokenOption = (tokenExpiry, clear = false) => {
+const tokenOption = (tokenExpiry) => {
   const options = {
     httpOnly: true,
     secure: true, // Ensure this is true in production
     sameSite: "none", // or "strict" depending on your needs
     maxAge: tokenExpiry, // Set cookie expiration
-    domain: ".vercel.app", // Make sure this is consistent
-    path: "/", // Make sure this is consistent
   };
-
-  if (clear) {
-    options.maxAge = 0; // Set maxAge to 0 to clear the cookie
-  }
 
   return options;
 };
 
-// export const logout = asyncHandler(async (req, res) => {
-//   //todos
-//   //find user
-//   //remove refresh and access token
-
-//   // await User.findByIdAndUpdate(
-//   //   req.user._id,
-//   //   {
-//   //     $set: { refreshToken: undefined },
-//   //   },
-//   //   {
-//   //     new: true,
-//   //   }
-//   // );
-
-//   return res
-//     .status(200)
-//     .clearCookie("accessToken", tokenOption(0)) // Setting maxAge to 0 clears the cookie
-//     .clearCookie("refreshToken", tokenOption(0))
-//     .json(new ApiResponse(200, {}, "User logged out successfully"));
-// });
 export const logout = asyncHandler(async (req, res) => {
+  //todos
+  //find user
+  //remove refresh and access token
+
+  // await User.findByIdAndUpdate(
+  //   req.user._id,
+  //   {
+  //     $set: { refreshToken: undefined },
+  //   },
+  //   {
+  //     new: true,
+  //   }
+  // );
+
+  const options = {
+    httpOnly: true,
+    secure: true, // Ensure this is true in production
+    sameSite: "none", // or "strict" depending on your needs
+    // maxAge: tokenExpiry, // Set cookie expiration
+  };
+
   return res
     .status(200)
-    .clearCookie("accessToken", tokenOption(0, true)) // Clear accessToken cookie
-    .clearCookie("refreshToken", tokenOption(0, true)) // Clear refreshToken cookie
+    .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
+    .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
