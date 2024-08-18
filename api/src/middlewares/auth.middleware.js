@@ -6,7 +6,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 export const verifyJWT = asyncHandler(async (req, res, next) => {
   try {
     const token =
-      req.cookies?.access_token ||
+      req.cookies?.accessToken ||
       req.headers["authorization"]?.replace("Bearer ", "");
     if (!token) {
       throw new ApiError(401, "Unauthorized request");
