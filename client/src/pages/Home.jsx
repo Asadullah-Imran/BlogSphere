@@ -1,10 +1,16 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AuthContext } from "../context/authContext.jsx";
 
 import { Link } from "react-router-dom";
 import { logout } from "../services/authenticationsServices.js";
 
 const HomePage = () => {
+  const { user } = useContext(AuthContext);
+  // console.log("user is: ", user);
+  useEffect(() => {
+    console.log("user in HomePage: ", user);
+  }, [user]);
+
   const handleLogout = async () => {
     try {
       const res = await logout();
@@ -17,8 +23,7 @@ const HomePage = () => {
       // Optionally, show an error message to the user
     }
   };
-  const { user } = useContext(AuthContext);
-  console.log("user is: ", user);
+
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen text-cusPrimaryColor dark:text-cusSecondaryLightColor p-4">
       <header className="flex justify-between items-center mb-4">
