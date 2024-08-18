@@ -14,7 +14,11 @@ export const verifyEmail = (id, token) => {
   return axios.get(`${API_URL}verify-email?id=${id}&token=${token}`);
 };
 export const logout = () =>
-  axios.post(`${API_URL}logout`, {
-    withCredentials: true, // This ensures that cookies are sent and received
-  });
+  axios.post(
+    `${API_URL}logout`,
+    {},
+    {
+      withCredentials: true, // This ensures that cookies are sent and received
+    }
+  );
 export const refreshToken = () => axios.post(`${API_URL}refresh-token`);
