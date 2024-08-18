@@ -210,6 +210,8 @@ export const logout = asyncHandler(async (req, res) => {
     }
   );
 
+  const afterLogoutUser = await User.findById(req.user._id);
+
   const options = {
     httpOnly: true,
     secure: true, // Ensure this is true in production
@@ -221,6 +223,10 @@ export const logout = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
     .clearCookie("refreshToken", options)
     .json(
-      new ApiResponse(200, { user: req.user }, "User logged out successfully")
+      new ApiResponse(
+        200,
+        { user: afterLogoutUser },
+        "User logged out successfully"
+      )
     );
 });
