@@ -14,6 +14,7 @@ export const AuthContextProvider = ({ children }) => {
     const res = await login(credentials);
     setUser(res.data.data.email);
     console.log("authcontext user set is :", res.data.data.email);
+    return res;
   };
 
   // Function to handle user logout
