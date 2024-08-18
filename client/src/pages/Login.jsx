@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login } from "../services/authenticationsServices.js"; // Import the login service
+import { AuthContext } from "../context/authContext.jsx";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +10,7 @@ const Login = () => {
   const [error, setError] = useState(""); // State to handle error messages
   const [isLoading, setIsLoading] = useState(false); // State to handle loading state
   const navigate = useNavigate();
+  const { loginWithContext } = useContext(AuthContext);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,7 +20,7 @@ const Login = () => {
     e.preventDefault();
     setIsLoading(true); // Start loading
     try {
-      const response = await login(formData); // Call the login service
+      const response = await loginWithContext(formData); // Call the login service
       if (response.data.success) {
         localStorage.setItem("token", response.data.data.refreshToken); // Store JWT token
         // navigate("/"); // Redirect to homepage on success

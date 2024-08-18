@@ -1,4 +1,5 @@
-// import React from 'react';
+import { useContext } from "react";
+import { AuthContext } from "../context/authContext.jsx";
 
 import { Link } from "react-router-dom";
 import { logout } from "../services/authenticationsServices.js";
@@ -16,7 +17,7 @@ const HomePage = () => {
       // Optionally, show an error message to the user
     }
   };
-
+  const { user } = useContext(AuthContext);
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen text-cusPrimaryColor dark:text-cusSecondaryLightColor p-4">
       <header className="flex justify-between items-center mb-4">
@@ -35,7 +36,9 @@ const HomePage = () => {
           <Link
             to="/login"
             className="bg-cusPrimaryColor text-white p-2 rounded dark:bg-cusSecondaryColor"
-          ></Link>
+          >
+            {user}
+          </Link>
           <button
             onClick={handleLogout}
             className="bg-cusPrimaryColor text-white p-2 rounded dark:bg-cusSecondaryColor"
