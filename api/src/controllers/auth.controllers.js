@@ -198,19 +198,16 @@ const tokenOption = (tokenExpiry) => {
 export const logout = asyncHandler(async (req, res) => {
   //todos
   //find user
-  //remove refresh and access token
+  // Find the user by ID and remove the refresh token from their document
+  const user = await User.findById(req.user._id);
 
-  await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      $set: { refreshToken: undefined },
-    },
-    {
-      new: true,
-    }
-  );
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
 
-  const afterLogoutUser = await User.findById(req.user._id);
+  // Remove the refresh token from the database
+  user.refreshToken = undefined;
+  await user.save({ validateBeforeSave: false });
 
   const options = {
     httpOnly: true,
@@ -222,11 +219,5 @@ export const logout = asyncHandler(async (req, res) => {
     .status(200)
     .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
     .clearCookie("refreshToken", options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: afterLogoutUser },
-        "User logged out successfully"
-      )
-    );
+    .json(new ApiResponse(200, { user: user }, "User logged out successfully"));
 });
