@@ -190,11 +190,12 @@ const tokenOption = (tokenExpiry, clear = false) => {
     secure: true, // Ensure this is true in production
     sameSite: "none", // or "strict" depending on your needs
     maxAge: tokenExpiry, // Set cookie expiration
+    domain: "blog-app-eta-orcin.vercel.app", // Make sure this is consistent
+    path: "/", // Make sure this is consistent
   };
 
   if (clear) {
-    options.domain = "blog-app-eta-orcin.vercel.app"; // Use the correct domain
-    options.path = "/"; // Ensure that the path is correct for clearing
+    options.maxAge = 0; // Set maxAge to 0 to clear the cookie
   }
 
   return options;
