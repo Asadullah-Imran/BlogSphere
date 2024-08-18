@@ -184,34 +184,47 @@ export const login = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, loggedInUser, "User logged in successfully"));
 });
 
-const tokenOption = (tokenExpiry) => {
+const tokenOption = (tokenExpiry, clear = false) => {
   const options = {
     httpOnly: true,
     secure: true, // Ensure this is true in production
     sameSite: "none", // or "strict" depending on your needs
     maxAge: tokenExpiry, // Set cookie expiration
   };
+
+  if (clear) {
+    options.domain = "blog-app-eta-orcin.vercel.app"; // Use the correct domain
+    options.path = "/"; // Ensure that the path is correct for clearing
+  }
+
   return options;
 };
 
+// export const logout = asyncHandler(async (req, res) => {
+//   //todos
+//   //find user
+//   //remove refresh and access token
+
+//   // await User.findByIdAndUpdate(
+//   //   req.user._id,
+//   //   {
+//   //     $set: { refreshToken: undefined },
+//   //   },
+//   //   {
+//   //     new: true,
+//   //   }
+//   // );
+
+//   return res
+//     .status(200)
+//     .clearCookie("accessToken", tokenOption(0)) // Setting maxAge to 0 clears the cookie
+//     .clearCookie("refreshToken", tokenOption(0))
+//     .json(new ApiResponse(200, {}, "User logged out successfully"));
+// });
 export const logout = asyncHandler(async (req, res) => {
-  //todos
-  //find user
-  //remove refresh and access token
-
-  // await User.findByIdAndUpdate(
-  //   req.user._id,
-  //   {
-  //     $set: { refreshToken: undefined },
-  //   },
-  //   {
-  //     new: true,
-  //   }
-  // );
-
   return res
     .status(200)
-    .clearCookie("accessToken", tokenOption(0)) // Setting maxAge to 0 clears the cookie
-    .clearCookie("refreshToken", tokenOption(0))
+    .clearCookie("accessToken", tokenOption(0, true)) // Clear accessToken cookie
+    .clearCookie("refreshToken", tokenOption(0, true)) // Clear refreshToken cookie
     .json(new ApiResponse(200, {}, "User logged out successfully"));
 });
