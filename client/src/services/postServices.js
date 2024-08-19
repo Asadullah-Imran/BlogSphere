@@ -32,9 +32,20 @@ export const deletePost = (postId) => {
 
 export const getComments = (postId) =>
   axios.get(`${API_URL}posts/${postId}/comments`);
-export const addComment = (postId, commentData) =>
-  axios.post(`${API_URL}posts/${postId}/comments`, commentData);
+export const addComment = (postId, commentData) => {
+  return axios.post(`${API_URL}posts/${postId}/comments`, commentData, {
+    withCredentials: true, // Ensures cookies are sent and received
+  });
+};
 export const getReactions = (postId) =>
   axios.get(`${API_URL}posts/${postId}/reactions`);
-export const addReaction = (postId, reactionData) =>
-  axios.post(`${API_URL}posts/${postId}/reactions`, reactionData);
+
+export const addOrRemoveReaction = (postId) => {
+  return axios.post(
+    `${API_URL}posts/${postId}/reactions`,
+    {},
+    {
+      withCredentials: true, // Ensures cookies are sent and received
+    }
+  );
+};

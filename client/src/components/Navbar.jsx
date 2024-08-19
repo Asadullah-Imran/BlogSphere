@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import { logout } from "../services/authenticationsServices";
 
@@ -7,6 +8,7 @@ const Navbar = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   console.log("Navbar user:", user);
+  const navigate = useNavigate();
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
@@ -17,13 +19,21 @@ const Navbar = () => {
     logout();
   };
 
+  const handleProfileClick = () => {
+    if (user && user._id) {
+      navigate(`/profile/${user._id}`);
+    }
+  };
+
   return (
     <nav className="bg-cusLightBG dark:bg-cusDarkBG px-4 py-2 flex justify-between items-center">
       <div className="text-xl font-bold text-cusPrimaryColor">My Blog</div>
       <div className="flex items-center space-x-4">
         {user ? (
           <div className="flex items-center space-x-2">
-            <span className="text-cusPrimaryColor">Welcome, {user}</span>
+            <span className="text-cusPrimaryColor" onClick={handleProfileClick}>
+              Welcome, {user.fullname}
+            </span>
             <button
               onClick={handleLogout}
               className="text-cusSecondaryColor hover:text-cusSecondaryLightColor"

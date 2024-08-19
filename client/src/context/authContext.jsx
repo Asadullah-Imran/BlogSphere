@@ -24,8 +24,9 @@ export const AuthContextProvider = ({ children }) => {
     try {
       const res = await login(credentials);
       console.log("Login response:", res);
-      setUser(res.data.data.email);
-      console.log("User set to:", res.data.data.email);
+      console.log("Login response.data.data:", res.data.data);
+      setUser(res.data.data);
+      // console.log("User set to:", res.data.data.email);
       return res;
     } catch (error) {
       console.error("Login failed:", error.message);

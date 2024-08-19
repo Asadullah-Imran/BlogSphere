@@ -24,10 +24,10 @@ router.delete("/:id", deletePost);
 
 // Comments;
 router.get("/:id/comments", getCommentsForPost);
-router.post("/:id/comments", addCommentToPost);
+router.post("/:id/comments", verifyJWT, addCommentToPost);
 
 // Reactions
 router.get("/:id/reactions", getReactionsForPost);
-router.post("/:id/reactions", addReactionToPost);
+router.post("/:id/reactions", verifyJWT, addReactionToPost);
 
 export default router;

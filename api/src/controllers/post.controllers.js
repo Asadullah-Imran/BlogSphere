@@ -182,6 +182,7 @@ export const getCommentsForPost = async (req, res, next) => {
 export const addCommentToPost = async (req, res, next) => {
   try {
     const { content } = req.body;
+
     const comment = new Comment({
       content,
       author: req.user._id, // Assuming user info is available in req.user
@@ -199,33 +200,66 @@ export const addCommentToPost = async (req, res, next) => {
 };
 
 // Add a reaction to a post
-export const addReactionToPost = async (req, res, next) => {
-  try {
-    const { type } = req.body;
-    const existingReaction = await Reaction.findOne({
-      post: req.params.id,
-      user: req.user._id,
-    });
+// export const addReactionToPost = async (req, res, next) => {
+//   try {
+//     const { type } = req.body;
+//     const existingReaction = await Reaction.findOne({
+//       post: req.params.id,
+//       user: req.user._id,
+//     });
 
-    if (existingReaction) {
-      return next(new ApiError(400, "User has already reacted to this post"));
+//     if (existingReaction) {
+//       return next(new ApiError(400, "User has already reacted to this post"));
+//     }
+
+//     const reaction = new Reaction({
+//       type,
+//       user: req.user._id, // Assuming user info is available in req.user
+//       post: req.params.id,
+//     });
+
+//     await reaction.save();
+//     res.status(201).json({
+//       success: true,
+//       data: reaction,
+//     });
+//   } catch (error) {
+//     next(new ApiError(500, "Failed to add reaction"));
+//   }
+// };
+
+export const addReactionToPost = asyncHandler(async (req, res, next) => {
+  try {
+    const userId = req.user._id; // user is set in verifyJWT middleware
+    const postId = req.params.id;
+    console.log("user id is ", userId);
+    console.log("post id is ", postId);
+
+    let reaction = await Reaction.findOne({ user: userId, post: postId });
+    console.log("reaction is ", reaction);
+    if (reaction) {
+      // If the reaction exists, remove it
+      await Reaction.findByIdAndDelete(reaction._id);
+    } else {
+      // console.log();
+      // If the reaction does not exist, add it
+      reaction = new Reaction({ user: userId, post: postId });
+      console.log("again reaction is ", reaction);
+      await reaction.save();
     }
 
-    const reaction = new Reaction({
-      type,
-      user: req.user._id, // Assuming user info is available in req.user
-      post: req.params.id,
-    });
+    const updatedReactions = await Reaction.find({ post: postId });
+    console.log("updated reactions are ", updatedReactions);
 
-    await reaction.save();
-    res.status(201).json({
-      success: true,
-      data: reaction,
-    });
+    res
+      .status(200)
+      .json(
+        new ApiResponse(200, updatedReactions, "Reaction updated successfully")
+      );
   } catch (error) {
-    next(new ApiError(500, "Failed to add reaction"));
+    next(new ApiError(500, "Failed to update reaction"));
   }
-};
+});
 
 // Get reactions for a post
 export const getReactionsForPost = async (req, res, next) => {

@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   addComment,
-  addReaction,
+  addOrRemoveReaction,
   getComments,
   getPostById,
   getReactions,
@@ -16,7 +16,6 @@ const SinglePost = () => {
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [newComment, setNewComment] = useState("");
-  const [reactionType, setReactionType] = useState("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -62,9 +61,9 @@ const SinglePost = () => {
     }
   };
 
-  const handleAddReaction = async (type) => {
+  const handleAddOrRemoveReaction = async () => {
     try {
-      await addReaction(id, { type });
+      await addOrRemoveReaction(id);
       const response = await getReactions(id);
       setReactions(response.data.data);
     } catch (error) {
@@ -73,58 +72,64 @@ const SinglePost = () => {
   };
 
   return (
-    <div className="p-4">
+    <div className="max-w-4xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg">
       {post && (
         <>
-          <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
+          <h1 className="text-5xl font-extrabold mb-6 text-center text-cusPrimaryColor">
+            {post.title}
+          </h1>
           <img
             src={post.image}
             alt={post.title}
-            className="mb-4 w-full max-w-2xl"
+            className="w-full h-auto rounded-lg shadow-lg mb-6"
           />
-          <p className="text-lg mb-4">{post.content}</p>
-          <div className="flex gap-4 mb-4">
+          <p className="text-lg leading-relaxed text-gray-700 mb-8">
+            {post.content}
+          </p>
+          <div className="flex gap-4 mb-8">
             <button
-              onClick={() => handleAddReaction("like")}
-              className="bg-blue-500 text-white px-4 py-2 rounded"
+              onClick={handleAddOrRemoveReaction}
+              className=" bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cusSecondaryColor"
             >
-              Like
+              ❤️ Love
             </button>
-            <button
-              onClick={() => handleAddReaction("love")}
-              className="bg-red-500 text-white px-4 py-2 rounded"
-            >
-              Love
-            </button>
-            {/* Add other reaction buttons here */}
           </div>
-          <h2 className="text-2xl font-semibold mb-2">Reactions:</h2>
-          <ul className="list-disc pl-5 mb-4">
-            {reactions.map((reaction) => (
-              <li key={reaction._id}>
-                {reaction.type} by {reaction.user.fullname}
-              </li>
-            ))}
-          </ul>
-          <h2 className="text-2xl font-semibold mb-2">Comments:</h2>
-          <ul className="list-disc pl-5 mb-4">
+          <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
+            Reactions
+          </h2>
+          <div className="flex items-center mb-8">
+            <span className="text-2xl">❤️</span>
+            <span className="ml-2 text-lg text-gray-700">
+              {reactions.length} {reactions.length === 1 ? "Love" : "Loves"}
+            </span>
+          </div>
+          <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
+            Comments
+          </h2>
+          <ul className="space-y-4 mb-8">
             {comments.map((comment) => (
-              <li key={comment._id}>
-                {comment.content} - {comment.author.fullname}
+              <li
+                key={comment._id}
+                className="bg-white p-4 rounded-lg shadow-md"
+              >
+                <p className="text-gray-700">{comment.content}</p>
+                <p className="text-sm text-gray-500 mt-2">
+                  - {comment.author.fullname}
+                </p>
               </li>
             ))}
           </ul>
-          <div className="mb-4">
+          <div>
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-2 border rounded"
+              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
               rows="3"
               placeholder="Add a comment..."
             />
             <button
               onClick={handleAddComment}
-              className="bg-green-500 text-white px-4 py-2 rounded mt-2"
+              className="w-full bg-cusPrimaryColor text-white px-4 py-2 rounded-lg mt-4 hover:bg-cusSecondaryColor transition duration-300"
             >
               Add Comment
             </button>
