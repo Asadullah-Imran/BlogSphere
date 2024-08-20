@@ -1,21 +1,24 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
-import { getUserPosts } from "../services/userServices";
+import { getUserPosts, updateUserData } from "../services/userServices";
 
 const Profile = () => {
   const { id } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user, setUser } = useContext(AuthContext);
   const [editMode, setEditMode] = useState(false);
   const [profileData, setProfileData] = useState({
     fullname: user ? user.fullname : "",
     email: user ? user.email : "",
-    profilePicture:
-      user && user.profilePicture ? user.profilePicture : "/profilePicture.jpg", // Replace with actual profile picture URL
+    // profilePicture:
+    //   user && user.profilePic ? user.profilePic : "/profilePicture.jpg", // Replace with actual profile picture URL
   });
+  const [profilePic, setProfilePic] = useState(
+    user && user.profilePic ? user.profilePic : "/profilePicture.jpg"
+  );
   console.log("user is ", user);
   const [posts, setPosts] = useState([]);
-  console.log("profile pic is ", profileData.profilePicture);
+  console.log("profile pic is ", profilePic);
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -35,17 +38,40 @@ const Profile = () => {
     });
   };
 
-  const handleProfilePictureChange = (e) => {
-    const file = e.target.files[0];
-    // Implement file upload logic here (using multer or similar on backend)
-    setProfileData({
-      ...profileData,
-      profilePicture: URL.createObjectURL(file),
-    });
-  };
+  // const handleProfilePictureChange = (e) => {
+  //   const file = e.target.files[0];
+  //   // Implement file upload logic here (using multer or similar on backend)
+  //   setProfileData({
+  //     ...profileData,
+  //     profilePicture: URL.createObjectURL(file),
+  //   });
+  // };
 
-  const handleSave = () => {
+  const formData = new FormData();
+  formData.append("fullname", profileData.fullname);
+  // formData.append("email", content);
+
+  if (profilePic) {
+    formData.append("profilePic", profilePic);
+  }
+
+  const handleSave = async () => {
     // Implement save logic (e.g., send data to the backend)
+    console.log("Profile pic data before save", formData.profilePic);
+    try {
+      const response = await updateUserData(id, formData);
+      setUser({
+        ...user,
+        profilePic: response.data.data.profilePic,
+        fullname: response.data.data.fullname,
+      });
+      setProfilePic(response.data.data.profilePic);
+      // setProfileData({ ...profileData, fullname: response.data.data.fullname });
+      console.log("successfully updated data");
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
     setEditMode(false);
   };
 
@@ -54,7 +80,7 @@ const Profile = () => {
       <div className="bg-cusLightBG p-6 rounded-lg shadow-md dark:bg-cusDarkBG">
         <div className="text-center">
           <img
-            src={profileData.profilePicture}
+            src={profilePic}
             alt="Profile"
             className="rounded-full h-32 w-32 mx-auto mb-4"
           />
@@ -62,16 +88,15 @@ const Profile = () => {
             <input
               type="file"
               accept="image/*"
-              onChange={handleProfilePictureChange}
+              //onChange={handleProfilePictureChange}
+              onChange={(e) => setProfilePic(e.target.files[0])}
               className="mb-4"
             />
           )}
           <h2 className="text-2xl font-semibold text-cusPrimaryColor dark:text-cusSecondaryColor">
-            {profileData.fullname}
+            {user.fullname}
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {profileData.email}
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">{user.email}</p>
         </div>
         <div className="mt-6">
           {editMode ? (
@@ -85,13 +110,13 @@ const Profile = () => {
                 </label>
                 <input
                   type="text"
-                  name="username"
+                  name="fullname"
                   value={profileData.fullname}
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded dark:bg-cusLightDarkBG dark:text-gray-200"
                 />
               </div>
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <label
                   className="block text-gray-700 dark:text-gray-300 mb-2"
                   htmlFor="email"
@@ -105,7 +130,7 @@ const Profile = () => {
                   onChange={handleInputChange}
                   className="w-full p-2 border rounded dark:bg-cusLightDarkBG dark:text-gray-200"
                 />
-              </div>
+              </div> */}
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"

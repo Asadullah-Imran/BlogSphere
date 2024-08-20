@@ -43,6 +43,7 @@ export const AuthContextProvider = ({ children }) => {
     user,
     loginWithContext,
     logoutWithContext,
+    setUser,
   };
 
   return (

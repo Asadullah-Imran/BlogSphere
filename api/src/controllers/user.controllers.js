@@ -26,9 +26,9 @@ export const updateUser = asyncHandler(async (req, res) => {
   let profilePicUrl;
 
   // check if the user is authorized to update the profile
-  if (req.user._id.toString() !== userId) {
-    throw new ApiError(403, "You are not authorized to update this user");
-  }
+  // if (req.user._id.toString() !== userId) {
+  //   throw new ApiError(403, "You are not authorized to update this user");
+  // }
 
   //Handle profile picture upload if a file is provided
 
