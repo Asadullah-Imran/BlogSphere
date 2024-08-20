@@ -11,9 +11,7 @@ const Profile = () => {
     fullname: user ? user.fullname : "",
     email: user ? user.email : "",
     profilePicture:
-      user && user.profilePicture
-        ? user.profilePicture
-        : "../../public/profilePicture.jpg", // Replace with actual profile picture URL
+      user && user.profilePicture ? user.profilePicture : "/profilePicture.jpg", // Replace with actual profile picture URL
   });
   console.log("user is ", user);
   const [posts, setPosts] = useState([]);
