@@ -37,6 +37,21 @@ export const addComment = (postId, commentData) => {
     withCredentials: true, // Ensures cookies are sent and received
   });
 };
+export const updateComment = (postId, commentId, commentData) => {
+  return axios.put(
+    `${API_URL}posts/${postId}/comments/${commentId}`,
+    commentData,
+    {
+      withCredentials: true, // Ensures cookies are sent and received
+    }
+  );
+};
+
+export const deleteComment = (postId, commentId) => {
+  return axios.delete(`${API_URL}posts/${postId}/comments/${commentId}`, {
+    withCredentials: true, // Ensures cookies are sent and received
+  });
+};
 export const getReactions = (postId) =>
   axios.get(`${API_URL}posts/${postId}/reactions`);
 

@@ -1,21 +1,28 @@
 // src/pages/SinglePost.js
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import icons
 import { useParams } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
 import {
   addComment,
   addOrRemoveReaction,
+  deleteComment,
   getComments,
   getPostById,
   getReactions,
+  updateComment,
 } from "../services/postServices";
-
 const SinglePost = () => {
+  const { user } = useContext(AuthContext);
   const { id } = useParams();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [reactions, setReactions] = useState([]);
   const [newComment, setNewComment] = useState("");
+
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editedComment, setEditedComment] = useState("");
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -58,6 +65,32 @@ const SinglePost = () => {
       setComments(response.data.data);
     } catch (error) {
       console.error("Error adding comment:", error.message);
+    }
+  };
+  const handleEditComment = async (commentId, commentData) => {
+    setEditCommentId(commentId);
+    setEditedComment(commentData);
+  };
+
+  const handleUpdateComment = async () => {
+    try {
+      await updateComment(id, editCommentId, { content: editedComment });
+      setEditCommentId(null);
+      setEditedComment("");
+      const response = await getComments(id);
+      setComments(response.data.data);
+    } catch (error) {
+      console.error("Error updating comment:", error.message);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await deleteComment(id, commentId);
+      const response = await getComments(id);
+      setComments(response.data.data);
+    } catch (error) {
+      console.error("Error deleting comment:", error.message);
     }
   };
 
@@ -112,10 +145,46 @@ const SinglePost = () => {
                 key={comment._id}
                 className="bg-white p-4 rounded-lg shadow-md"
               >
-                <p className="text-gray-700">{comment.content}</p>
-                <p className="text-sm text-gray-500 mt-2">
-                  - {comment.author.fullname}
-                </p>
+                {editCommentId === comment._id ? (
+                  <>
+                    <textarea
+                      value={editedComment}
+                      onChange={(e) => setEditedComment(e.target.value)}
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                      rows="3"
+                    />
+                    <button onClick={handleUpdateComment}>Update</button>
+                    <button
+                      onClick={() => {
+                        setEditCommentId(null);
+                        setEditedComment("");
+                      }}
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-gray-700">{comment.content}</p>
+                    <p className="text-sm text-gray-500 mt-2">
+                      - {comment.author.fullname}
+                    </p>
+                  </>
+                )}
+                {comment.author._id === user._id && (
+                  <>
+                    <FaEdit
+                      style={{ cursor: "pointer", marginLeft: "10px" }}
+                      onClick={() => {
+                        handleEditComment(comment._id, comment.content);
+                      }}
+                    />
+                    <FaTrashAlt
+                      style={{ cursor: "pointer", marginLeft: "10px" }}
+                      onClick={() => handleDeleteComment(comment._id)}
+                    />
+                  </>
+                )}
               </li>
             ))}
           </ul>
