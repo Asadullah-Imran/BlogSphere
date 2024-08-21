@@ -199,6 +199,61 @@ export const addCommentToPost = async (req, res, next) => {
   }
 };
 
+//Update comment
+export const updateComment = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+  const { content } = req.body;
+  const userId = req.user._id;
+
+  // Find the comment by its ID
+  const comment = await Comment.findById(commentId);
+
+  if (!comment) {
+    throw new ApiError(404, "Comment not found");
+  }
+
+  // Check if the current user is the owner of the comment
+  if (comment.user.toString() !== userId.toString()) {
+    return next(
+      new ApiError(403, "You are not authorized to update this comment")
+    );
+  }
+
+  // Update the comment content
+  comment.content = content;
+  await comment.save();
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, comment, "Comment updated Successfully"));
+});
+
+//Delete comment
+export const deleteComment = asyncHandler(async (req, res) => {
+  const { commentId } = req.params;
+  const userId = req.user._id;
+
+  //find the comment by its id
+  const comment = await Comment.findById(commentId);
+
+  if (!comment) {
+    throw new ApiError(404, "Comment not found");
+  }
+
+  //check if the current user is the owner of the commment
+
+  if (comment.user.toString() !== userId.toString()) {
+    throw new ApiError(403, "You are not authorized to delete this comment");
+  }
+
+  // delete the comment
+  await comment.remove();
+  res.status(200).json({
+    success: true,
+    message: "Comment deleted successfully",
+  });
+});
+
 // Add a reaction to a post
 // export const addReactionToPost = async (req, res, next) => {
 //   try {
@@ -228,8 +283,8 @@ export const addCommentToPost = async (req, res, next) => {
 //   }
 // };
 
-export const addReactionToPost = asyncHandler(async (req, res, next) => {
-  try {
+export const addOrRemoveReactionToPost = asyncHandler(
+  async (req, res, next) => {
     const userId = req.user._id; // user is set in verifyJWT middleware
     const postId = req.params.id;
     console.log("user id is ", userId);
@@ -256,10 +311,8 @@ export const addReactionToPost = asyncHandler(async (req, res, next) => {
       .json(
         new ApiResponse(200, updatedReactions, "Reaction updated successfully")
       );
-  } catch (error) {
-    next(new ApiError(500, "Failed to update reaction"));
   }
-});
+);
 
 // Get reactions for a post
 export const getReactionsForPost = async (req, res, next) => {
