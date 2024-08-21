@@ -3,6 +3,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import icons
 import { useParams } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 import { AuthContext } from "../context/authContext";
 import {
   addComment,
@@ -23,6 +24,9 @@ const SinglePost = () => {
 
   const [editCommentId, setEditCommentId] = useState(null);
   const [editedComment, setEditedComment] = useState("");
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [commentToDelete, setCommentToDelete] = useState(null);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -84,11 +88,22 @@ const SinglePost = () => {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
+  const openModal = (commentId) => {
+    setIsModalOpen(true);
+    setCommentToDelete(commentId);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setCommentToDelete(null);
+  };
+
+  const handleDeleteComment = async () => {
     try {
-      await deleteComment(id, commentId);
+      await deleteComment(id, commentToDelete);
       const response = await getComments(id);
       setComments(response.data.data);
+      closeModal();
     } catch (error) {
       console.error("Error deleting comment:", error.message);
     }
@@ -136,7 +151,7 @@ const SinglePost = () => {
               {reactions.length} {reactions.length === 1 ? "Love" : "Loves"}
             </span>
           </div>
-          <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
+          {/* <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
             Comments
           </h2>
           <ul className="space-y-4 mb-8">
@@ -202,9 +217,96 @@ const SinglePost = () => {
             >
               Add Comment
             </button>
+          </div> */}
+          <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
+            Comments
+          </h2>
+          <ul className="space-y-6 mb-8">
+            {comments.map((comment) => (
+              <li
+                key={comment._id}
+                className="bg-white p-6 rounded-lg shadow-md flex flex-col gap-4"
+              >
+                {editCommentId === comment._id ? (
+                  <>
+                    <textarea
+                      value={editedComment}
+                      onChange={(e) => setEditedComment(e.target.value)}
+                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                      rows="3"
+                    />
+                    <div className="flex justify-end gap-4">
+                      <button
+                        onClick={handleUpdateComment}
+                        className="bg-cusPrimaryColor text-white px-4 py-2 rounded-lg hover:bg-cusSecondaryColor transition duration-300"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditCommentId(null);
+                          setEditedComment("");
+                        }}
+                        className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition duration-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="flex justify-between items-start">
+                      <div className="flex flex-col gap-2">
+                        <p className="text-gray-800 text-lg">
+                          {comment.content}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          - {comment.author.fullname}
+                        </p>
+                      </div>
+                      {comment.author._id === user._id && (
+                        <div className="flex gap-2 text-gray-500">
+                          <FaEdit
+                            className="cursor-pointer hover:text-cusPrimaryColor"
+                            onClick={() =>
+                              handleEditComment(comment._id, comment.content)
+                            }
+                          />
+                          <FaTrashAlt
+                            className="cursor-pointer hover:text-red-500"
+                            onClick={() => openModal(comment._id)}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </li>
+            ))}
+          </ul>
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+              rows="3"
+              placeholder="Add a comment..."
+            />
+            <button
+              onClick={handleAddComment}
+              className="w-full bg-cusPrimaryColor text-white px-4 py-2 rounded-lg mt-4 hover:bg-cusSecondaryColor transition duration-300"
+            >
+              Add Comment
+            </button>
           </div>
         </>
       )}
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onConfirm={handleDeleteComment}
+        onCancel={closeModal}
+      />
     </div>
   );
 };
