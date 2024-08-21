@@ -201,27 +201,31 @@ export const addCommentToPost = async (req, res, next) => {
 
 //Update comment
 export const updateComment = asyncHandler(async (req, res) => {
+  console.log("update comment is called");
   const { commentId } = req.params;
   const { content } = req.body;
-  const userId = req.user._id;
+  // const userId = req.user._id;
+  const userId = "66c0af684ad4a052f2aaf590";
 
   // Find the comment by its ID
   const comment = await Comment.findById(commentId);
-
+  console.log("comment is ", comment);
   if (!comment) {
     throw new ApiError(404, "Comment not found");
   }
 
   // Check if the current user is the owner of the comment
-  if (comment.user.toString() !== userId.toString()) {
-    return next(
-      new ApiError(403, "You are not authorized to update this comment")
-    );
+
+  if (comment.author.toString() !== userId.toString()) {
+    console.log("comment user is ", comment.author);
+
+    throw new ApiError(403, "You are not authorized to update this comment");
   }
 
   // Update the comment content
   comment.content = content;
   await comment.save();
+  console.log("comment is saved");
 
   res
     .status(200)
@@ -229,31 +233,49 @@ export const updateComment = asyncHandler(async (req, res) => {
 });
 
 //Delete comment
-export const deleteComment = asyncHandler(async (req, res) => {
-  const { commentId } = req.params;
-  const userId = req.user._id;
+// export const deleteComment = asyncHandler(async (req, res) => {
+//   const { commentId, id } = req.params;
+//   console.log("id is : ", id);
+//   console.log("comment id is : ", commentId);
+//   // const userId = req.user._id;
+//   const userId = "66c0af684ad4a052f2aaf590";
 
-  //find the comment by its id
-  const comment = await Comment.findById(commentId);
+//   //find the comment by its id
+//   const comment = await Comment.findById(commentId);
+//   console.log("comment is ", comment);
+//   if (!comment) {
+//     throw new ApiError(404, "Comment not found");
+//   }
+
+//   //check if the current user is the owner of the commment
+
+//   if (comment.author.toString() !== userId.toString()) {
+//     throw new ApiError(403, "You are not authorized to delete this comment");
+//   }
+
+//   // delete the comment
+//   await comment.remove();
+//   console.log("comment is removed");
+//   res.status(200).json({
+//     success: true,
+//     message: "Comment deleted successfully",
+//   });
+// });
+
+export const deleteComment = asyncHandler(async (req, res, next) => {
+  const { commentId } = req.params;
+
+  const comment = await Comment.findByIdAndDelete(commentId);
 
   if (!comment) {
-    throw new ApiError(404, "Comment not found");
+    return next(new ApiError(404, "comment not found"));
   }
 
-  //check if the current user is the owner of the commment
-
-  if (comment.user.toString() !== userId.toString()) {
-    throw new ApiError(403, "You are not authorized to delete this comment");
-  }
-
-  // delete the comment
-  await comment.remove();
   res.status(200).json({
     success: true,
     message: "Comment deleted successfully",
   });
 });
-
 // Add a reaction to a post
 // export const addReactionToPost = async (req, res, next) => {
 //   try {

@@ -21,9 +21,10 @@ const asyncHandler = (fn) => (req, res, next) => {
     if (err instanceof ApiError) {
       res.status(err.statusCode).json({ success: false, message: err.message });
     } else {
+      console.error(err);
       res.status(500).json({
         success: false,
-        message: "An unexpected error occurred. Please try again.",
+        message: err.message,
       });
     }
   });
