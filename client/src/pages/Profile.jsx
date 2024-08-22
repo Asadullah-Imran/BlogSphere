@@ -37,25 +37,26 @@ const Profile = () => {
       [e.target.name]: e.target.value,
     });
   };
-
-  // const handleProfilePictureChange = (e) => {
-  //   const file = e.target.files[0];
-  //   // Implement file upload logic here (using multer or similar on backend)
-  //   setProfileData({
-  //     ...profileData,
-  //     profilePicture: URL.createObjectURL(file),
-  //   });
-  // };
-
-  const formData = new FormData();
-  formData.append("fullname", profileData.fullname);
-  // formData.append("email", content);
-
-  if (profilePic) {
-    formData.append("profilePic", profilePic);
-  }
+  const handleProfilePictureChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.size < 5000000) {
+      // Limit to 5MB
+      setProfilePic(file);
+    } else {
+      window.alert("File is too large or not an image.");
+      console.error("File is too large or not an image.");
+    }
+  };
 
   const handleSave = async () => {
+    const formData = new FormData();
+    formData.append("fullname", profileData.fullname);
+    // formData.append("email", content);
+
+    if (profilePic) {
+      formData.append("profilePic", profilePic);
+    }
+
     // Implement save logic (e.g., send data to the backend)
     console.log("Profile pic data before save", formData.profilePic);
     try {
@@ -75,6 +76,27 @@ const Profile = () => {
     setEditMode(false);
   };
 
+
+  const handleDeletePost = async (postId) => {
+    // try {
+    //   // await deleteUserPost(postId);
+    //   setPosts(posts.filter((post) => post._id !== postId));
+    // } catch (error) {
+    //   console.log("Failed to delete post: ", error);
+    // }
+    console.log("Delete post with ID: ", postId);
+  };
+
+  const handleEditPost = (postId) => {
+    // navigate(`/edit-post/${postId}`);
+    console.log("Edit post with ID: ", postId);
+  };
+
+  const handleReadMore = (postId) => {
+    // navigate(`/post/${postId}`);
+    console.log("Read more post with ID: ", postId);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <div className="bg-cusLightBG p-6 rounded-lg shadow-md dark:bg-cusDarkBG">
@@ -88,8 +110,8 @@ const Profile = () => {
             <input
               type="file"
               accept="image/*"
-              //onChange={handleProfilePictureChange}
-              onChange={(e) => setProfilePic(e.target.files[0])}
+              onChange={handleProfilePictureChange}
+              // onChange={(e) => setProfilePic(e.target.files[0])}
               className="mb-4"
             />
           )}
@@ -147,7 +169,7 @@ const Profile = () => {
           ) : (
             <button
               onClick={() => setEditMode(true)}
-              className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
+              className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor transition-colors duration-300"
             >
               Edit Profile
             </button>
@@ -180,9 +202,34 @@ const Profile = () => {
                 <p className="text-gray-600 dark:text-gray-400">
                   {post.content.substring(0, 100)}...
                 </p>
-                <button className="mt-2 px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor">
+                {/* <button className="mt-2 px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor">
                   Edit Post
-                </button>
+                </button> */}
+
+
+              <div className="mt-2 flex justify-between items-center">    
+                  <button
+                    onClick={() => handleReadMore(post._id)}
+                    className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
+                  >
+                    Read More
+                  </button>
+                  <div>
+                    <button
+                      onClick={() => handleEditPost(post._id)}
+                      className="px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeletePost(post._id)}
+                      className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                    >
+                      Delete
+                    </button>
+                  </div>
+
+              </div>
               </div>
             ))
           ) : (
