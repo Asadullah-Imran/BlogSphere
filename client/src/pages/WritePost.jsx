@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { createPost } from "../services/postServices";
+import { useLocation } from "react-router-dom";
+import { createPost, updatePost } from "../services/postServices";
 
 const WritePost = () => {
-  const [selectedTags, setSelectedTags] = useState([]);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const location = useLocation();
+  const post = location?.state;
+  console.log("location state is --------->", location.state);
+  console.log("Post is --------->", post);
+
+  const [selectedTags, setSelectedTags] = useState(post ? post.tags : []);
+  const [title, setTitle] = useState(post ? post.title : "");
+  const [content, setContent] = useState(post ? post.content : "");
   const [image, setImage] = useState(null);
 
   const fixedTags = [
@@ -26,6 +32,7 @@ const WritePost = () => {
         ? prevTags.filter((t) => t !== tag)
         : [...prevTags, tag]
     );
+    // console.log(JSON.stringify(selectedTags));
   };
 
   const handleSubmit = async (e) => {
@@ -40,10 +47,15 @@ const WritePost = () => {
     }
 
     try {
-      const res = await createPost(formData);
-      console.log("Post created successfully:", res);
+      if (post) {
+        const res = await updatePost(post._id, formData);
+        console.log("Post updated successfully:", res);
+      } else {
+        const res = await createPost(formData);
+        console.log("Post created successfully:", res);
+      }
     } catch (error) {
-      console.error("Error creating post:", error.message);
+      console.error("Error creating/updating post:", error.message);
     }
     // Logic to handle form submission, such as sending data to the server
   };
@@ -128,7 +140,7 @@ const WritePost = () => {
           type="submit"
           className="w-full bg-cusPrimaryColor text-white py-2 rounded-lg font-semibold hover:bg-cusSecondaryColor transition-colors"
         >
-          Publish Post
+          {post ? "Update Post" : "Publish Post"}
         </button>
       </form>
     </div>

@@ -48,6 +48,13 @@ export const createPost = async (req, res, next) => {
     const { title, content, tags } = req.body;
     // const author = "66c0af684ad4a052f2aaf590"; // Replace with dynamic author ID
     const author = req.user._id; // Assuming user info is available in req.user
+    // Parse the tags JSON string back into an array
+    let parsedTags = [];
+    try {
+      parsedTags = JSON.parse(tags);
+    } catch (error) {
+      throw new ApiError(400, "Invalid tags format");
+    }
 
     let image;
     if (req.file && req.file.path) {
@@ -64,7 +71,7 @@ export const createPost = async (req, res, next) => {
       title,
       content,
       image, // Save the secure URL of the uploaded image
-      tags,
+      tags: parsedTags,
       author,
     });
 
@@ -123,13 +130,36 @@ export const getPostById = async (req, res, next) => {
 // Update a post by ID
 export const updatePost = async (req, res, next) => {
   try {
-    const { title, content, image, tags } = req.body;
+    const { title, content, tags } = req.body;
 
-    const post = await Post.findByIdAndUpdate(
-      req.params.id,
-      { title, content, image, tags },
-      { new: true, runValidators: true }
-    );
+    // Parse the tags JSON string back into an array
+    let parsedTags = [];
+    if (tags) {
+      try {
+        parsedTags = JSON.parse(tags);
+      } catch (error) {
+        throw new ApiError(400, "Invalid tags format");
+      }
+    }
+
+    let image;
+    if (req.file && req.file.path) {
+      const uploadResponse = await uploadOnCloudinary(req.file.path);
+      if (!uploadResponse) {
+        throw new ApiError(500, "Failed to upload image");
+      }
+      image = uploadResponse.secure_url; // Save only the secure URL or other required field
+    }
+
+    const updateData = { title, content, tags: parsedTags };
+    if (image) {
+      updateData.image = image;
+    }
+
+    const post = await Post.findByIdAndUpdate(req.params.id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!post) {
       return next(new ApiError(404, "Post not found"));
@@ -190,6 +220,12 @@ export const addCommentToPost = async (req, res, next) => {
     });
 
     await comment.save();
+
+    // Update the post document
+    await Post.findByIdAndUpdate(req.params.id, {
+      $push: { comments: comment._id },
+    });
+
     res.status(201).json({
       success: true,
       data: comment,
@@ -270,6 +306,10 @@ export const deleteComment = asyncHandler(async (req, res, next) => {
   if (!comment) {
     return next(new ApiError(404, "comment not found"));
   }
+  // make it delete comment in post
+  await Post.findByIdAndUpdate(req.params.id, {
+    $pull: { comments: commentId },
+  });
 
   res.status(200).json({
     success: true,
@@ -315,6 +355,11 @@ export const addOrRemoveReactionToPost = asyncHandler(
     let reaction = await Reaction.findOne({ user: userId, post: postId });
     console.log("reaction is ", reaction);
     if (reaction) {
+      // If the reaction exists, remove it from post
+      await Post.findByIdAndUpdate(postId, {
+        $pull: { reactions: reaction._id },
+      });
+
       // If the reaction exists, remove it
       await Reaction.findByIdAndDelete(reaction._id);
     } else {
@@ -323,6 +368,9 @@ export const addOrRemoveReactionToPost = asyncHandler(
       reaction = new Reaction({ user: userId, post: postId });
       console.log("again reaction is ", reaction);
       await reaction.save();
+      await Post.findByIdAndUpdate(postId, {
+        $push: { reactions: reaction._id },
+      });
     }
 
     const updatedReactions = await Reaction.find({ post: postId });

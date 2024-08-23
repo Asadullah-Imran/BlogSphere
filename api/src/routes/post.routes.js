@@ -21,7 +21,7 @@ const router = express.Router();
 router.post("/", verifyJWT, upload.single("image"), createPost);
 router.get("/", getPosts);
 router.get("/:id", getPostById);
-router.put("/:id", updatePost);
+router.put("/:id", verifyJWT, upload.single("image"), updatePost);
 router.delete("/:id", deletePost);
 
 // Comments;
@@ -37,5 +37,10 @@ router.delete("/:id/comments/:commentId", verifyJWT, deleteComment);
 // Reactions
 router.get("/:id/reactions", getReactionsForPost);
 router.post("/:id/reactions", verifyJWT, addOrRemoveReactionToPost);
+
+// Best Blogs
+router.get("/best-blogs", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build/index.html"));
+});
 
 export default router;

@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 import { AuthContext } from "../context/authContext";
+import { deletePost } from "../services/postServices";
 import { getUserPosts, updateUserData } from "../services/userServices";
 
 const Profile = () => {
@@ -10,15 +12,15 @@ const Profile = () => {
   const [profileData, setProfileData] = useState({
     fullname: user ? user.fullname : "",
     email: user ? user.email : "",
-    // profilePicture:
-    //   user && user.profilePic ? user.profilePic : "/profilePicture.jpg", // Replace with actual profile picture URL
   });
   const [profilePic, setProfilePic] = useState(
     user && user.profilePic ? user.profilePic : "/profilePicture.jpg"
   );
-  console.log("user is ", user);
   const [posts, setPosts] = useState([]);
-  console.log("profile pic is ", profilePic);
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal
+  const [postIdToDelete, setPostIdToDelete] = useState(""); // State to store post ID to delete
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -37,10 +39,10 @@ const Profile = () => {
       [e.target.name]: e.target.value,
     });
   };
+
   const handleProfilePictureChange = (e) => {
     const file = e.target.files[0];
     if (file && file.size < 5000000) {
-      // Limit to 5MB
       setProfilePic(file);
     } else {
       window.alert("File is too large or not an image.");
@@ -51,14 +53,11 @@ const Profile = () => {
   const handleSave = async () => {
     const formData = new FormData();
     formData.append("fullname", profileData.fullname);
-    // formData.append("email", content);
 
     if (profilePic) {
       formData.append("profilePic", profilePic);
     }
 
-    // Implement save logic (e.g., send data to the backend)
-    console.log("Profile pic data before save", formData.profilePic);
     try {
       const response = await updateUserData(id, formData);
       setUser({
@@ -67,7 +66,6 @@ const Profile = () => {
         fullname: response.data.data.fullname,
       });
       setProfilePic(response.data.data.profilePic);
-      // setProfileData({ ...profileData, fullname: response.data.data.fullname });
       console.log("successfully updated data");
       console.log(response);
     } catch (err) {
@@ -76,25 +74,29 @@ const Profile = () => {
     setEditMode(false);
   };
 
+  const handleDeletePost = (postId) => {
+    setPostIdToDelete(postId);
+    setIsModalOpen(true);
+  };
 
-  const handleDeletePost = async (postId) => {
-    // try {
-    //   // await deleteUserPost(postId);
-    //   setPosts(posts.filter((post) => post._id !== postId));
-    // } catch (error) {
-    //   console.log("Failed to delete post: ", error);
-    // }
-    console.log("Delete post with ID: ", postId);
+  const handleConfirmDelete = async () => {
+    try {
+      await deletePost(postIdToDelete);
+      setPosts(posts.filter((post) => post._id !== postIdToDelete)); // Remove the deleted post from the state
+      // so i do not need to call database again for the updated post list
+
+      setIsModalOpen(false);
+      console.log("Post deleted successfully");
+    } catch (err) {
+      console.log("Failed to delete post: ", err);
+    }
+  };
+  const handleCancelDelete = () => {
+    setIsModalOpen(false);
   };
 
   const handleEditPost = (postId) => {
-    // navigate(`/edit-post/${postId}`);
     console.log("Edit post with ID: ", postId);
-  };
-
-  const handleReadMore = (postId) => {
-    // navigate(`/post/${postId}`);
-    console.log("Read more post with ID: ", postId);
   };
 
   return (
@@ -111,7 +113,6 @@ const Profile = () => {
               type="file"
               accept="image/*"
               onChange={handleProfilePictureChange}
-              // onChange={(e) => setProfilePic(e.target.files[0])}
               className="mb-4"
             />
           )}
@@ -138,21 +139,6 @@ const Profile = () => {
                   className="w-full p-2 border rounded dark:bg-cusLightDarkBG dark:text-gray-200"
                 />
               </div>
-              {/* <div className="mb-4">
-                <label
-                  className="block text-gray-700 dark:text-gray-300 mb-2"
-                  htmlFor="email"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  name="email"
-                  value={profileData.email}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded dark:bg-cusLightDarkBG dark:text-gray-200"
-                />
-              </div> */}
               <button
                 onClick={handleSave}
                 className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
@@ -180,8 +166,6 @@ const Profile = () => {
         <h3 className="text-xl font-semibold text-cusPrimaryColor dark:text-cusSecondaryColor mb-4">
           Your Posts
         </h3>
-        {/* Here you can map through the user's posts and display them */}
-        {/* Display the user's posts */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {posts.length > 0 ? (
             posts.map((post) => (
@@ -202,25 +186,21 @@ const Profile = () => {
                 <p className="text-gray-600 dark:text-gray-400">
                   {post.content.substring(0, 100)}...
                 </p>
-                {/* <button className="mt-2 px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor">
-                  Edit Post
-                </button> */}
-
-
-              <div className="mt-2 flex justify-between items-center">    
-                  <button
-                    onClick={() => handleReadMore(post._id)}
+                <div className="mt-2 flex justify-between items-center">
+                  <Link
+                    to={`/post/${post._id}`}
                     className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
                   >
                     Read More
-                  </button>
+                  </Link>
                   <div>
-                    <button
-                      onClick={() => handleEditPost(post._id)}
+                    <Link
+                      to={`/create-post?postId=${post._id}`}
+                      state={post}
                       className="px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor"
                     >
                       Edit
-                    </button>
+                    </Link>
                     <button
                       onClick={() => handleDeletePost(post._id)}
                       className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
@@ -228,8 +208,26 @@ const Profile = () => {
                       Delete
                     </button>
                   </div>
-
-              </div>
+                </div>
+                <div className="mt-2">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    {post.comments.length} Comments
+                  </span>
+                  <span className="ml-4 text-gray-600 dark:text-gray-400">
+                    {post.reactions.length} Reactions
+                  </span>
+                </div>
+                <div className="mt-2">
+                  {post.tags.length > 0 &&
+                    post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs px-2 py-1 rounded-full mr-2"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                </div>
               </div>
             ))
           ) : (
@@ -237,6 +235,11 @@ const Profile = () => {
           )}
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 };
