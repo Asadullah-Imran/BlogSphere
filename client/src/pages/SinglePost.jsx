@@ -264,7 +264,7 @@ const SinglePost = () => {
                           - {comment.author.fullname}
                         </p>
                       </div>
-                      {comment.author._id === user._id && (
+                      {user && comment.author._id === user._id && (
                         <div className="flex gap-2 text-gray-500">
                           <FaEdit
                             className="cursor-pointer hover:text-cusPrimaryColor"

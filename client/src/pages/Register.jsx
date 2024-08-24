@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { register } from "../services/authenticationsServices.js";
 
@@ -13,8 +13,35 @@ const Register = () => {
   const [isRegistered, setIsRegistered] = useState(false);
   const [timer, setTimer] = useState(180); // 3 minutes in seconds
   const [isResendDisabled, setIsResendDisabled] = useState(true);
+  const [isLoading, setLoading] = useState(false); // New loading state
 
-  const notify = (text) => toast(text);
+  const notify = (text, state) => {
+    if (state === "success") {
+      toast.success(text, {
+        position: "top-center",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        // theme: "light",
+        transition: Bounce,
+      });
+    } else if (state === "failure") {
+      toast.error(text, {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        // theme: "light",
+        transition: Bounce,
+      });
+    }
+  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,15 +49,15 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
     try {
       const response = await register(formData);
       if (response?.data?.success) {
-        notify(response?.data?.message);
+        notify(response?.data?.message, "success");
         setIsRegistered(true);
         setFormData({ fullname: "", email: "", password: "" });
-
         // Start the timer
-        startTimer();
+        startTimer(); // for resend email
       }
     } catch (error) {
       if (
@@ -38,10 +65,12 @@ const Register = () => {
         error.response.data &&
         error.response.data.message
       ) {
-        notify(error.response.data.message);
+        notify(error.response.data.message, "failure");
       } else {
-        notify("An unexpected error occurred. Please try again.");
+        notify("An unexpected error occurred. Please try again.", "failure");
       }
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -62,7 +91,8 @@ const Register = () => {
   const handleResend = () => {
     //%%%%%%%%%%%%later on%%%%%%%%%%%%%%%%%%
     //Here we will handle the resend verification link operation later on
-    notify("Verification link resent. Please check your email.");
+
+    notify("Verification link resent. Please check your email.", "success");
     setTimer(180);
     startTimer();
     setIsResendDisabled(true);
@@ -124,8 +154,20 @@ const Register = () => {
               <button
                 type="submit"
                 className="w-full p-2 bg-cusPrimaryColor text-white rounded hover:bg-opacity-90 dark:bg-cusSecondaryColor"
+                disabled={isLoading}
               >
-                Register
+                {isLoading ? (
+                  <div className="flex justify-center items-center">
+                    <span>Registering</span>
+                    <div className="ml-2 flex space-x-1">
+                      <div className="w-2.5 h-2.5 bg-white rounded-full animate-bounce-dot"></div>
+                      <div className="w-2.5 h-2.5 bg-white rounded-full animate-bounce-dot delay-150"></div>
+                      <div className="w-2.5 h-2.5 bg-white rounded-full animate-bounce-dot delay-300"></div>
+                    </div>
+                  </div>
+                ) : (
+                  "Register"
+                )}
               </button>
             </form>
 

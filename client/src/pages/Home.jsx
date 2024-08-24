@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import BestBlogs from "../components/BestBlogs"; // Import the new component
 import { getPosts } from "../services/postServices";
 
 const Home = () => {
   const [blogs, setBlogs] = useState([]); // Define the 'blogs' state variable
+
+  const location = useLocation();
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -17,6 +19,12 @@ const Home = () => {
     };
 
     fetchBlogs();
+    const queryParams = new URLSearchParams(location.search);
+    console.log("queryParams---> ", queryParams);
+    if (queryParams.get("source") === "login") {
+      console.log("User came by login");
+    }
+    console.log("location is---> ", location);
   }, []);
 
   return (

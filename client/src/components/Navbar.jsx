@@ -1,5 +1,5 @@
 import React, { useContext, useState } from "react";
-import { FiMoon, FiSun } from "react-icons/fi"; // Import icons
+import { FiEdit2, FiLogOut, FiMoon, FiSun } from "react-icons/fi"; // Import icons
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import { logout } from "../services/authenticationsServices";
@@ -45,16 +45,31 @@ const Navbar = () => {
         {user ? (
           <div className="flex items-center space-x-2">
             <span
-              className="text-cusPrimaryColor cursor-pointer capitalize "
+              className="text-cusPrimaryColor cursor-pointer capitalize"
               onClick={handleProfileClick}
             >
               {getDisplayName(user.fullname)}
             </span>
             <button
+              onClick={() => navigate("/create-post")}
+              className=" flex text-cusSecondaryColor hover:text-cusSecondaryLightColor "
+            >
+              <p className="hidden md:block">Write</p>
+              <FiEdit2 className="md:hidden" size={20} />
+            </button>
+
+            {/* Show logout text on desktop, icons on mobile */}
+            <button
               onClick={handleLogout}
-              className="text-cusSecondaryColor hover:text-cusSecondaryLightColor"
+              className="text-cusSecondaryColor hover:text-cusSecondaryLightColor hidden md:block"
             >
               Logout
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-cusSecondaryColor hover:text-cusSecondaryLightColor  md:hidden"
+            >
+              <FiLogOut size={20} />
             </button>
           </div>
         ) : (

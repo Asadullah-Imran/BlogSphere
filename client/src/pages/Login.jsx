@@ -1,5 +1,7 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../context/authContext.jsx";
 
 const Login = () => {
@@ -11,7 +13,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false); // State to handle loading state
   const navigate = useNavigate();
   const { loginWithContext } = useContext(AuthContext);
-
+  const notify = (text) => toast(text);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -22,9 +24,10 @@ const Login = () => {
     try {
       const response = await loginWithContext(formData); // Call the login service
       if (response.data.success) {
-        // navigate("/"); // Redirect to homepage on success
         console.log("Login success");
         console.log(response.data.data);
+        notify(response?.data?.message);
+        navigate("/?source=login"); // Redirect to homepage on success
       } else {
         setError(response.data.message); // Set error message
       }
@@ -38,6 +41,7 @@ const Login = () => {
   return (
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cusLightDarkBG p-6 rounded-lg shadow-md w-full max-w-md">
+        <ToastContainer />
         <h2 className="text-2xl font-bold mb-4 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
           Login
         </h2>
@@ -72,14 +76,19 @@ const Login = () => {
               required
             />
           </div>
-
           <button
             type="submit"
             className="w-full p-2 bg-cusPrimaryColor text-white rounded hover:bg-opacity-90 dark:bg-cusSecondaryColor"
             disabled={isLoading} // Disable button while loading
           >
-            {isLoading ? "Logging in..." : "Login"}{" "}
-            {/* Change button text while loading */}
+            {isLoading ? (
+              <div className="flex justify-center items-center">
+                <div className="w-5 h-5 border-4 border-t-transparent border-white rounded-full animate-spin-slow"></div>
+                <span className="ml-2">Logging in...</span>
+              </div>
+            ) : (
+              "Login"
+            )}
           </button>
         </form>
 
