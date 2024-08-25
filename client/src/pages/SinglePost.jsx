@@ -128,7 +128,7 @@ const SinglePost = () => {
   const reactionCount = reactions.length;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex gap-6">
+    <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex md:flex-col gap-6">
       {post && (
         <>
           {/* Main Post Content */}
