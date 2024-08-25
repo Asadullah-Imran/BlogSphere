@@ -13,17 +13,12 @@ export default {
         cusLightBG: "#F8E8F1", // this is the custom color for light background
       },
       keyframes: {
-        bounce: {
-          "0%, 80%, 100%": { transform: "scale(0)" },
-          "40%": { transform: "scale(1)" },
-        },
         spin: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
         },
       },
       animation: {
-        // "bounce-dot": "bounce 1.2s infinite ease-in-out both",
         "spin-slow": "spin 1s linear infinite",
       },
     },

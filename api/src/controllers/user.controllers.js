@@ -1,24 +1,29 @@
-import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
-export const getPostsByUserId = asyncHandler(async (req, res) => {
-  const { userId } = req.params;
-  console.log(userId);
+// Controller to get user profile
+export const getUserProfile = async (req, res, next) => {
+  try {
+    const userId = req.params.userId;
+    // Find the user by ID and exclude the password and refreshToken fields
+    const user = await User.findById(userId).select("-password -refreshToken");
 
-  const posts = await Post.find({ author: userId });
-  if (!posts) {
-    conosle.log("No posts found for this user");
-    throw new ApiError(404, "No posts found for this user");
+    if (!user) {
+      return next(new ApiError(404, "User not found"));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    next(new ApiError(500, "Internal server error"));
   }
-  console.log(posts);
-  res
-    .status(200)
-    .json(new ApiResponse(200, posts, "Posts fetched successfully"));
-});
+};
 
 export const updateUser = asyncHandler(async (req, res) => {
   const { userId } = req.params;
