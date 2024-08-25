@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Bounce, ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { register } from "../services/authenticationsServices.js";
+import { notify } from "../utils/notify";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -14,34 +15,6 @@ const Register = () => {
   const [timer, setTimer] = useState(180); // 3 minutes in seconds
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [isLoading, setLoading] = useState(false); // New loading state
-
-  const notify = (text, state) => {
-    if (state === "success") {
-      toast.success(text, {
-        position: "top-center",
-        autoClose: 4000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        // theme: "light",
-        transition: Bounce,
-      });
-    } else if (state === "failure") {
-      toast.error(text, {
-        position: "top-center",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        // theme: "light",
-        transition: Bounce,
-      });
-    }
-  };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

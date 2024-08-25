@@ -1,4 +1,7 @@
+import { format } from "date-fns"; // To format the date
 import React, { useEffect, useState } from "react";
+import { AiFillHeart } from "react-icons/ai"; // For love icon
+import { FaRegComment } from "react-icons/fa"; // For comment icon
 import { Link } from "react-router-dom";
 import { getPosts } from "../services/postServices";
 
@@ -14,6 +17,12 @@ const fixedTags = [
   "Entertainment",
   "Finance",
 ];
+
+const truncateText = (text, wordLimit) => {
+  const words = text.split(" ");
+  if (words.length <= wordLimit) return text;
+  return words.slice(0, wordLimit).join(" ") + "...";
+};
 
 const Posts = () => {
   const [posts, setPosts] = useState([]);
@@ -31,6 +40,10 @@ const Posts = () => {
 
     fetchPosts();
   }, []);
+
+  const handleTagClick = (tag) => {
+    setSelectedTag(tag);
+  };
 
   // Filter posts based on the selected tag
   const filteredPosts = selectedTag
@@ -73,30 +86,62 @@ const Posts = () => {
         {filteredPosts.map((post, index) => (
           <div
             key={post._id}
-            className={`flex flex-col ${
-              index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-            } gap-4 bg-cusLightBG p-6 rounded-lg`}
+            className={`flex flex-col md:flex-row gap-4 bg-cusLightBG p-6 rounded-lg ${
+              index % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
+            }`}
           >
-            <div className="md:w-1/2">
+            {/* First Section: Image with Overlapping Date, Reactions, and Comments */}
+            <div className="relative md:w-1/3">
               <img
                 src={post.image}
                 alt={post.title}
-                className="max-w-96 max-h-96 h-auto rounded-lg"
+                className="max-w-full h-auto rounded-lg"
               />
+              <div className="absolute top-2 left-2 bg-white bg-opacity-75 text-gray-700 text-xs px-2 py-1 rounded">
+                {format(new Date(post.createdAt), "PPP")}
+              </div>
+              <div className="absolute bottom-2 left-2 flex gap-4 text-white">
+                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                  <AiFillHeart /> {post.reactions.length}
+                </div>
+                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                  <FaRegComment /> {post.comments.length}
+                </div>
+              </div>
             </div>
-            <div className="md:w-1/2 flex flex-col justify-between">
+
+            {/* Second Section: Title, Author, Content, Tags */}
+            <div className="md:w-2/3 flex flex-col justify-between">
               <div>
                 <h2 className="text-2xl font-semibold text-cusDarkBG">
                   {post.title}
                 </h2>
-                <p className="text-cusPrimaryColor mt-2">{post.content}</p>
-                <p className="text-cusSecondaryColor mt-4">
-                  Author: {post.author.fullname}
+                <p className="text-cusSecondaryColor mt-2">
+                  by {post.author.fullname}
                 </p>
+                <p className="text-cusPrimaryColor mt-4">
+                  {truncateText(post.content, 150)}
+                </p>
+              </div>
+              <div className="mt-4">
+                <h3 className="font-semibold">Tags:</h3>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {post.tags.map((tag) => (
+                    <span
+                      onClick={() => {
+                        handleTagClick(tag);
+                      }}
+                      key={tag}
+                      className="px-3 py-1 bg-cusSecondaryLightColor text-cusDarkBG  cursor-pointer rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
               </div>
               <Link
                 to={`/post/${post._id}`}
-                className="mt-4 text-cusPrimaryColor underline"
+                className="mt-4 bg-cusPrimaryColor text-white py-2 px-4 rounded text-center w-32"
               >
                 Read More
               </Link>

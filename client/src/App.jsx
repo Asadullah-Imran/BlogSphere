@@ -4,7 +4,7 @@ import Layout from "./Layout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Posts from "./pages/Posts";
-import Profile from "./pages/Profile";
+import Profile2 from "./pages/Profile2";
 import Register from "./pages/Register";
 import SinglePost from "./pages/SinglePost";
 import VerifyEmail from "./pages/VerifyEmail"; // Adjust the path as needed
@@ -31,7 +31,7 @@ const App = () => {
           />
           <Route
             path="profile/:id"
-            element={<PrivateRoute element={<Profile />} />}
+            element={<PrivateRoute element={<Profile2 />} />}
           />
         </Route>
       </Routes>

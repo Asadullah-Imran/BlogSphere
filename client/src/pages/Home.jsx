@@ -1,10 +1,22 @@
-import React, { useEffect, useState } from "react";
+import { format } from "date-fns"; // To format the date
+import { useEffect, useState } from "react";
+import { AiFillHeart } from "react-icons/ai"; // For love icon
+import { FaRegComment } from "react-icons/fa"; // For comment icon
 import { Link, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import BestBlogs from "../components/BestBlogs"; // Import the new component
 import { getPosts } from "../services/postServices";
+import { notify } from "../utils/notify";
+
+const truncateText = (text, wordLimit) => {
+  const words = text.split(" ");
+  if (words.length <= wordLimit) return text;
+  return words.slice(0, wordLimit).join(" ") + "...";
+};
 
 const Home = () => {
-  const [blogs, setBlogs] = useState([]); // Define the 'blogs' state variable
+  const [posts, setPosts] = useState([]); // Define the 'blogs' state variable
 
   const location = useLocation();
 
@@ -12,7 +24,10 @@ const Home = () => {
     const fetchBlogs = async () => {
       try {
         const response = await getPosts();
-        setBlogs(response.data.data.slice(0, 10)); // Fetch only the first 10 posts
+        const fetchedPosts = response.data.data;
+        // Assuming posts are fetched in ascending order, reverse them
+        const lastTenPosts = fetchedPosts.slice(-10).reverse();
+        setPosts(lastTenPosts);
       } catch (error) {
         console.error("Error fetching posts:", error.message);
       }
@@ -20,45 +35,84 @@ const Home = () => {
 
     fetchBlogs();
     const queryParams = new URLSearchParams(location.search);
+
     console.log("queryParams---> ", queryParams);
     if (queryParams.get("source") === "login") {
       console.log("User came by login");
+      notify("You have successfully logged in!", "success");
     }
     console.log("location is---> ", location);
   }, []);
 
   return (
     <div className="p-4">
+      <ToastContainer />
       {/* Best Blogs Section */}
       <BestBlogs />
 
       {/* All Blogs Section */}
       <section>
         <h2 className="text-2xl font-bold mb-4">All Blogs</h2>
-        <div className="space-y-4">
-          {blogs.map((blog, index) => (
+        <div className="space-y-8">
+          {posts.map((post, index) => (
             <div
-              key={blog._id}
-              className={`flex flex-col md:flex-row md:items-center ${
+              key={post._id}
+              className={`flex flex-col md:flex-row gap-4 bg-cusLightBG p-6 rounded-lg ${
                 index % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
-              } bg-cusLightBG dark:bg-cusDarkBG p-4 rounded shadow-md`}
+              }`}
             >
-              <img
-                src={blog.image}
-                alt={blog.title}
-                className="w-full h-40 object-cover mb-2 rounded md:w-60 md:h-40 md:mb-0 md:mr-4"
-              />
-              <div className="flex-1">
-                <h3 className="text-xl font-semibold">{blog.title}</h3>
-                <p className="text-cusPrimaryColor">
-                  {blog.content.substring(0, 100)}...
-                </p>
-                <span className="text-cusSecondaryColor">
-                  {new Date(blog.createdAt).toLocaleDateString()}
-                </span>
+              {/* First Section: Image with Overlapping Date, Reactions, and Comments */}
+              <div className="relative md:w-1/3">
+                <img
+                  src={post.image}
+                  alt={post.title}
+                  className="max-w-full h-auto rounded-lg"
+                />
+                <div className="absolute top-2 left-2 bg-white bg-opacity-75 text-gray-700 text-xs px-2 py-1 rounded">
+                  {format(new Date(post.createdAt), "PPP")}
+                </div>
+                <div className="absolute bottom-2 left-2 flex gap-4 text-white">
+                  <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                    <AiFillHeart /> {post.reactions.length}
+                  </div>
+                  <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                    <FaRegComment /> {post.comments.length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Second Section: Title, Author, Content, Tags */}
+              <div className="md:w-2/3 flex flex-col justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-cusDarkBG">
+                    {post.title}
+                  </h2>
+                  <Link
+                    to={`/profile/${post.author._id}`}
+                    className="text-cusSecondaryColor mt-2"
+                  >
+                    by {post.author.fullname}
+                  </Link>
+                  <p className="text-cusPrimaryColor mt-4">
+                    {truncateText(post.content, 150)}
+                  </p>
+                </div>
+                <div className="mt-4">
+                  <h3 className="font-semibold">Tags:</h3>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {post.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="px-3 py-1 bg-cusSecondaryLightColor text-cusDarkBG  rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
                 <Link
-                  to={`/post/${blog._id}`}
-                  className="text-blue-500 hover:underline mt-2 block"
+                  to={`/post/${post._id}`}
+                  className="mt-4 bg-cusPrimaryColor text-white py-2 px-4 rounded text-center w-32"
                 >
                   Read More
                 </Link>
@@ -66,9 +120,12 @@ const Home = () => {
             </div>
           ))}
         </div>
-        {blogs.length === 10 && (
+        {posts.length === 10 && (
           <div className="mt-4">
-            <Link to="/posts" className="text-blue-500 hover:underline">
+            <Link
+              to="/posts"
+              className="mt-4 bg-cusPrimaryColor text-white py-2 px-4 rounded text-center w-32"
+            >
               View All Posts
             </Link>
           </div>

@@ -9,6 +9,7 @@ import {
   getPostById,
   getPosts,
   getReactionsForPost,
+  getUserPosts,
   updateComment,
   updatePost,
 } from "../controllers/post.controllers.js";
@@ -20,6 +21,7 @@ const router = express.Router();
 // Define routes
 router.post("/", verifyJWT, upload.single("image"), createPost);
 router.get("/", getPosts);
+router.get("/user/:userId", getUserPosts);
 router.get("/:id", getPostById);
 router.put("/:id", verifyJWT, upload.single("image"), updatePost);
 router.delete("/:id", deletePost);

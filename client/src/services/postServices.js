@@ -30,6 +30,10 @@ export const deletePost = (postId) => {
   });
 };
 
+//get perticular users all post
+export const getUserPosts = async (userId) =>
+  await axios.get(`${API_URL}posts/user/${userId}`);
+
 export const getComments = (postId) =>
   axios.get(`${API_URL}posts/${postId}/comments`);
 export const addComment = (postId, commentData) => {

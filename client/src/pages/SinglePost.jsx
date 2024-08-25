@@ -1,7 +1,6 @@
-// src/pages/SinglePost.js
-
+import { formatDistanceToNow } from "date-fns"; // For time ago formatting
 import React, { useContext, useEffect, useState } from "react";
-import { FaEdit, FaTrashAlt } from "react-icons/fa"; // Import icons
+import { FaEdit, FaHeart, FaTrashAlt } from "react-icons/fa"; // Import icons
 import { useParams } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { AuthContext } from "../context/authContext";
@@ -14,6 +13,7 @@ import {
   getReactions,
   updateComment,
 } from "../services/postServices";
+
 const SinglePost = () => {
   const { user } = useContext(AuthContext);
   const { id } = useParams();
@@ -71,6 +71,7 @@ const SinglePost = () => {
       console.error("Error adding comment:", error.message);
     }
   };
+
   const handleEditComment = async (commentId, commentData) => {
     setEditCommentId(commentId);
     setEditedComment(commentData);
@@ -119,6 +120,12 @@ const SinglePost = () => {
     }
   };
 
+  // Check if user has reacted
+  const hasReacted = reactions.some(
+    (reaction) => reaction.user._id === user?._id
+  );
+  const reactionCount = reactions.length;
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg">
       {post && (
@@ -131,93 +138,41 @@ const SinglePost = () => {
             alt={post.title}
             className="w-full h-auto rounded-lg shadow-lg mb-6"
           />
+          <div className="flex items-center gap-4 mb-6">
+            <img
+              src={post.author.profilePic}
+              alt={post.author.fullname}
+              className="w-12 h-12 rounded-full"
+            />
+            <div>
+              <p className="text-lg font-semibold text-cusPrimaryColor">
+                {post.author.fullname}
+              </p>
+              <p className="text-sm text-gray-600">
+                {formatDistanceToNow(new Date(post.createdAt), {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
+          </div>
           <p className="text-lg leading-relaxed text-gray-700 mb-8">
             {post.content}
           </p>
-          <div className="flex gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-8">
             <button
               onClick={handleAddOrRemoveReaction}
-              className=" bg-red-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-red-600 transition duration-300 focus:outline-none focus:ring-2 focus:ring-cusSecondaryColor"
+              className="flex items-center text-3xl p-2 rounded-lg hover:bg-red-100 transition duration-300"
             >
-              ❤️ Love
+              <FaHeart
+                className={`transition duration-300 ${
+                  hasReacted ? "text-red-500" : "text-gray-400"
+                }`}
+              />
+              <span className="ml-2 text-lg font-semibold">
+                {reactionCount}
+              </span>
             </button>
           </div>
-          <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
-            Reactions
-          </h2>
-          <div className="flex items-center mb-8">
-            <span className="text-2xl">❤️</span>
-            <span className="ml-2 text-lg text-gray-700">
-              {reactions.length} {reactions.length === 1 ? "Love" : "Loves"}
-            </span>
-          </div>
-          {/* <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
-            Comments
-          </h2>
-          <ul className="space-y-4 mb-8">
-            {comments.map((comment) => (
-              <li
-                key={comment._id}
-                className="bg-white p-4 rounded-lg shadow-md"
-              >
-                {editCommentId === comment._id ? (
-                  <>
-                    <textarea
-                      value={editedComment}
-                      onChange={(e) => setEditedComment(e.target.value)}
-                      className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
-                      rows="3"
-                    />
-                    <button onClick={handleUpdateComment}>Update</button>
-                    <button
-                      onClick={() => {
-                        setEditCommentId(null);
-                        setEditedComment("");
-                      }}
-                    >
-                      Cancel
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-gray-700">{comment.content}</p>
-                    <p className="text-sm text-gray-500 mt-2">
-                      - {comment.author.fullname}
-                    </p>
-                  </>
-                )}
-                {comment.author._id === user._id && (
-                  <>
-                    <FaEdit
-                      style={{ cursor: "pointer", marginLeft: "10px" }}
-                      onClick={() => {
-                        handleEditComment(comment._id, comment.content);
-                      }}
-                    />
-                    <FaTrashAlt
-                      style={{ cursor: "pointer", marginLeft: "10px" }}
-                      onClick={() => handleDeleteComment(comment._id)}
-                    />
-                  </>
-                )}
-              </li>
-            ))}
-          </ul>
-          <div>
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
-              rows="3"
-              placeholder="Add a comment..."
-            />
-            <button
-              onClick={handleAddComment}
-              className="w-full bg-cusPrimaryColor text-white px-4 py-2 rounded-lg mt-4 hover:bg-cusSecondaryColor transition duration-300"
-            >
-              Add Comment
-            </button>
-          </div> */}
           <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
             Comments
           </h2>

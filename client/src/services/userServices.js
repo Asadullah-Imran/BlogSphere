@@ -7,3 +7,6 @@ export const getUserPosts = async (userId) =>
 
 export const updateUserData = async (userId, formdata) =>
   await axios.put(`${API_URL}users/${userId}`, formdata);
+
+// export const getUserProfile = async (userId) =>
+//   await axios.get(`${API_URL}users/${userId}`);
