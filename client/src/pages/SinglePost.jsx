@@ -131,11 +131,6 @@ const SinglePost = () => {
     <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex gap-6">
       {post && (
         <>
-          {/* You May Like Component on the Left */}
-          <div className="w-1/4">
-            <YouMayLike currentPostId={id} tags={post.tags} />
-          </div>
-
           {/* Main Post Content */}
           <div className="w-3/4">
             <h1 className="text-5xl font-extrabold mb-6 text-center text-cusPrimaryColor">
@@ -262,6 +257,10 @@ const SinglePost = () => {
                 Add Comment
               </button>
             </div>
+          </div>
+          {/* You May Like Component on the Left */}
+          <div className="w-1/4">
+            <YouMayLike currentPostId={id} tags={post.tags} />
           </div>
         </>
       )}

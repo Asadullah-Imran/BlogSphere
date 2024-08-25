@@ -159,6 +159,7 @@ export const login = asyncHandler(async (req, res) => {
 
   if (!user.isVerified) {
     await verificationEmail(user);
+    console.log("Email not verified");
     throw new ApiError(
       400,
       "A email sent to your email Please verify your email to login"
@@ -220,4 +221,23 @@ export const logout = asyncHandler(async (req, res) => {
     .clearCookie("accessToken", options) // Setting maxAge to 0 clears the cookie
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, { user: user }, "User logged out successfully"));
+});
+
+export const resendVerificationEmail = asyncHandler(async (req, res) => {
+  console.log("resendVerificationEmail is calling");
+  // const { user } = req.body;
+  const credentials = req.body;
+  if (!credentials) {
+    throw new ApiError(400, "Please provide a valid email address");
+  }
+  await verificationEmail(credentials);
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "Verification email resent. Please check your email."
+      )
+    );
 });

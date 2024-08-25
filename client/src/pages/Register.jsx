@@ -2,7 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { register } from "../services/authenticationsServices.js";
+import {
+  register,
+  resendVerificationEmail,
+} from "../services/authenticationsServices.js";
 import { notify } from "../utils/notify";
 
 const Register = () => {
@@ -11,8 +14,9 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const [sentUserData, setSentUserData] = useState({});
   const [isRegistered, setIsRegistered] = useState(false);
-  const [timer, setTimer] = useState(180); // 3 minutes in seconds
+  const [timer, setTimer] = useState(30); // 3 minutes in seconds
   const [isResendDisabled, setIsResendDisabled] = useState(true);
   const [isLoading, setLoading] = useState(false); // New loading state
 
@@ -28,6 +32,7 @@ const Register = () => {
       if (response?.data?.success) {
         notify(response?.data?.message, "success");
         setIsRegistered(true);
+        setSentUserData({ ...formData });
         setFormData({ fullname: "", email: "", password: "" });
         // Start the timer
         startTimer(); // for resend email
@@ -54,19 +59,24 @@ const Register = () => {
         if (prev <= 1) {
           clearInterval(countdown);
           setIsResendDisabled(false);
-          return 180; // Reset timer to 3 minutes for the next round
+          return 30; // Reset timer to 3 minutes for the next round
         }
         return prev - 1;
       });
     }, 1000);
   };
 
-  const handleResend = () => {
+  const handleResend = async () => {
     //%%%%%%%%%%%%later on%%%%%%%%%%%%%%%%%%
     //Here we will handle the resend verification link operation later on
-
-    notify("Verification link resent. Please check your email.", "success");
-    setTimer(180);
+    try {
+      const res = await resendVerificationEmail(sentUserData);
+      notify(res.message, "success");
+    } catch (error) {
+      console.log(error);
+      notify(error.message, "failure");
+    }
+    setTimer(30);
     startTimer();
     setIsResendDisabled(true);
   };

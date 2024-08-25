@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AuthContext } from "../context/authContext.jsx";
+import { notify } from "../utils/notify";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -13,7 +14,7 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false); // State to handle loading state
   const navigate = useNavigate();
   const { loginWithContext } = useContext(AuthContext);
-  const notify = (text) => toast(text);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -26,13 +27,19 @@ const Login = () => {
       if (response.data.success) {
         console.log("Login success");
         console.log(response.data.data);
-        notify(response?.data?.message);
+        notify(response?.data?.message, "info");
         navigate("/?source=login"); // Redirect to homepage on success
       } else {
         setError(response.data.message); // Set error message
       }
     } catch (err) {
-      setError("Login failed. Please check your credentials.");
+      // setError("Login failed. Please check your credentials.");
+      // notify(err.message, "failure");
+      if (err?.response?.data?.message) {
+        notify(err?.response?.data?.message, "info");
+      } else {
+        notify("An unexpected error occurred. Please try again.", "failure");
+      }
     } finally {
       setIsLoading(false); // Stop loading
     }

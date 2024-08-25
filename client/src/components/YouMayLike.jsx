@@ -30,12 +30,20 @@ const YouMayLike = ({ currentPostId, tags }) => {
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-      <h3 className="text-2xl font-semibold mb-4 text-cusPrimaryColor">
+      <h3 className="text-2xl text-center font-semibold mb-4 text-cusPrimaryColor">
         You May Like
       </h3>
-      <ul className="space-y-4">
+      <ul className="space-y-6">
         {recommendedPosts.map((post) => (
-          <li key={post._id}>
+          <li
+            key={post._id}
+            className="bg-cusLightBG dark:bg-cusDarkBG p-2 rounded shadow-md flex-none w-60 mx-auto"
+          >
+            <img
+              src={post.image}
+              alt={post.title}
+              className="w-full h-30 object-cover mb-2 rounded"
+            />
             <Link
               to={`/posts/${post._id}`}
               className="text-lg text-cusPrimaryColor hover:underline"
@@ -43,9 +51,6 @@ const YouMayLike = ({ currentPostId, tags }) => {
               {post.title}
             </Link>
             <p className="text-sm text-gray-500">{post.author.fullname}</p>
-            <p className="text-sm text-gray-500">
-              {post.reactions.length} Reactions
-            </p>
           </li>
         ))}
       </ul>

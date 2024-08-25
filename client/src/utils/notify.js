@@ -24,5 +24,17 @@ export const notify = (text, state) => {
       // theme: "light",
       transition: Bounce,
     });
+  } else if (state === "info") {
+    toast.info(text, {
+      position: "top-center",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      // theme: "light",
+      transition: Bounce,
+    });
   }
 };
