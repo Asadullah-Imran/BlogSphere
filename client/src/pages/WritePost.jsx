@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createPost, updatePost } from "../services/postServices";
 
 const WritePost = () => {
@@ -12,6 +12,8 @@ const WritePost = () => {
   const [title, setTitle] = useState(post ? post.title : "");
   const [content, setContent] = useState(post ? post.content : "");
   const [image, setImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
   const fixedTags = [
     "Technology",
@@ -37,6 +39,7 @@ const WritePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading state to true
     // Create a new FormData object
     const formData = new FormData();
     formData.append("title", title);
@@ -47,15 +50,19 @@ const WritePost = () => {
     }
 
     try {
+      let res;
       if (post) {
-        const res = await updatePost(post._id, formData);
+        res = await updatePost(post._id, formData);
         console.log("Post updated successfully:", res);
       } else {
-        const res = await createPost(formData);
+        res = await createPost(formData);
         console.log("Post created successfully:", res);
       }
+      navigate(`/post/${res.data.data._id}`);
     } catch (error) {
       console.error("Error creating/updating post:", error.message);
+    } finally {
+      setIsLoading(false); // Set loading state to false
     }
     // Logic to handle form submission, such as sending data to the server
   };
@@ -63,7 +70,7 @@ const WritePost = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 bg-cusLightBG dark:bg-cusDarkBG rounded-lg shadow-md">
       <h1 className="text-2xl font-bold mb-4 text-cusPrimaryColor">
-        Create a New Post
+        {post ? "Edit Post" : "Create a New Post"}
       </h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -138,9 +145,23 @@ const WritePost = () => {
         </div>
         <button
           type="submit"
-          className="w-full bg-cusPrimaryColor text-white py-2 rounded-lg font-semibold hover:bg-cusSecondaryColor transition-colors"
+          className={`w-full py-2 rounded-lg font-semibold transition-colors ${
+            isLoading
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-cusPrimaryColor text-white hover:bg-cusSecondaryColor"
+          }`}
+          disabled={isLoading}
         >
-          {post ? "Update Post" : "Publish Post"}
+          {isLoading ? (
+            <div className="flex items-center justify-center">
+              <div className="w-5 h-5 border-4 border-t-transparent border-white rounded-full animate-spin-slow mr-2"></div>
+              <span>{post ? "Updating..." : "Publishing..."}</span>
+            </div>
+          ) : post ? (
+            "Update Post"
+          ) : (
+            "Publish Post"
+          )}
         </button>
       </form>
     </div>

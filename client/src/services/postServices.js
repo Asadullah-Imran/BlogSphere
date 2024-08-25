@@ -68,3 +68,13 @@ export const addOrRemoveReaction = (postId) => {
     }
   );
 };
+
+// New Services for Popular and Related Posts
+
+export const getPopularPosts = (currentPostId) => {
+  return axios.get(`${API_URL}posts/popular/${currentPostId}`);
+};
+
+export const getRelatedPosts = (tags, currentPostId) => {
+  return axios.post(`${API_URL}posts/related`, { tags, currentPostId });
+};

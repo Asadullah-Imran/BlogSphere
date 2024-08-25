@@ -109,7 +109,7 @@ export const getPostById = async (req, res, next) => {
   try {
     const post = await Post.findById(req.params.id).populate(
       "author",
-      "fullname email"
+      "fullname email profilePic"
     );
     // .populate("comments")
     // .populate("reactions");
@@ -414,3 +414,53 @@ export const getReactionsForPost = async (req, res, next) => {
     next(new ApiError(500, "Failed to fetch reactions"));
   }
 };
+
+/// New Controller
+
+export const getPopularPosts = asyncHandler(async (req, res) => {
+  const { currentPostId } = req.params;
+
+  // find all posts exluding the current one and sort them by reaction and comment
+
+  // const posts = await Post.find({ _id: { $ne: currentPostId } })
+  //   // .populate("author", "fullname email profilePic")
+  //   .sort({ reactions: -1, comments: -1 })
+  //   .limit(5);
+
+  const posts = await Post.find({ _id: { $ne: currentPostId } });
+  if (!posts) {
+    throw new ApiError(404, "No posts found");
+  }
+  const sortedPosts = posts.sort((a, b) => {
+    if (b.reactions.length === a.reactions.length) {
+      return b.comments.length - a.comments.length;
+    }
+    return b.reactions.length - a.reactions.length;
+  });
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, sortedPosts, "Popular posts fetched successfully")
+    );
+});
+
+export const getRelatedPosts = asyncHandler(async (req, res) => {
+  const { tags, currentPostId } = req.body;
+
+  //Find all posts with the same tags as the current post
+  const relatedPosts = await Post.find({
+    _id: { $ne: currentPostId },
+    tags: { $in: tags },
+  }).limit(5);
+
+  if (!relatedPosts) {
+    throw new ApiError(404, "No posts found");
+  }
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(200, relatedPosts, "Related posts fetched successfully")
+    );
+});
