@@ -120,7 +120,7 @@ const Home = () => {
             </div>
           ))}
         </div>
-        {posts.length === 10 && (
+        {/* {posts.length === 10 && (
           <div className="mt-4">
             <Link
               to="/posts"
@@ -129,7 +129,16 @@ const Home = () => {
               View All Posts
             </Link>
           </div>
-        )}
+        )} */}
+
+        <div className="mt-4">
+          <Link
+            to="/posts"
+            className="mt-4 bg-cusPrimaryColor text-white py-2 px-4 rounded text-center w-32"
+          >
+            View All Posts
+          </Link>
+        </div>
       </section>
     </div>
   );
