@@ -128,11 +128,11 @@ const SinglePost = () => {
   const reactionCount = reactions.length;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex md:flex-col gap-6">
+    <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex-col md:flex-row gap-6">
       {post && (
         <>
           {/* Main Post Content */}
-          <div className="w-3/4">
+          <div className="">
             <h1 className="text-5xl font-extrabold mb-6 text-center text-cusPrimaryColor">
               {post.title}
             </h1>
@@ -259,7 +259,7 @@ const SinglePost = () => {
             </div>
           </div>
           {/* You May Like Component on the Left */}
-          <div className="w-1/4">
+          <div className="">
             <YouMayLike currentPostId={id} tags={post.tags} />
           </div>
         </>
