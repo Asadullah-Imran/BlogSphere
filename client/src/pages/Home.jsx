@@ -64,7 +64,7 @@ const Home = () => {
               }`}
             >
               {/* First Section: Image with Overlapping Date, Reactions, and Comments */}
-              <div className="relative md:w-2/5 my-6">
+              <div className="relative md:w-2/5 my-2 md:my-6">
                 <img
                   src={post.image}
                   alt={post.title}

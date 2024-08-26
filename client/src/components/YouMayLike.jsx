@@ -39,15 +39,16 @@ const YouMayLike = ({ currentPostId, tags }) => {
             key={post._id}
             className="bg-cusLightBG dark:bg-cusLightDarkBG p-4 rounded shadow-md flex-none  max-w-full lg:w-84 mx-auto"
           >
-            <img
-              src={post.image}
-              alt={post.title}
-              className="w-full h-30 object-cover mb-2 rounded"
-            />
             <Link
               to={`/posts/${post._id}`}
-              className=" text-xl text-cusPrimaryColor font-semibold hover:underline"
+              className=" text-2xl md:text-xl  text-cusPrimaryColor font-semibold hover:underline"
             >
+              <img
+                src={post.image}
+                alt={post.title}
+                className="w-full h-30 object-cover mb-2 rounded"
+              />
+
               {post.title}
             </Link>
             {/* <p className="text-sm text-gray-500">{post.author.fullname}</p> */}
