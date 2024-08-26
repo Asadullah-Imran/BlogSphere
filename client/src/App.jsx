@@ -13,29 +13,31 @@ import PrivateRoute from "./utils/PrivateRoute";
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        {/* Routes outside of the main layout */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/verify-email" element={<VerifyEmail />} />
+    <div className="bg-white dark:bg-cusDarkBG min-h-screen">
+      <Router>
+        <Routes>
+          {/* Routes outside of the main layout */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/verify-email" element={<VerifyEmail />} />
 
-        {/* Main layout with nested routes */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Home />} />
-          <Route path="posts" element={<Posts />} />
-          <Route path="post/:id" element={<SinglePost />} />
-          <Route
-            path="create-post"
-            element={<PrivateRoute element={<WritePost />} />}
-          />
-          <Route
-            path="profile/:id"
-            element={<PrivateRoute element={<Profile />} />}
-          />
-        </Route>
-      </Routes>
-    </Router>
+          {/* Main layout with nested routes */}
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+            <Route path="posts" element={<Posts />} />
+            <Route path="post/:id" element={<SinglePost />} />
+            <Route
+              path="create-post"
+              element={<PrivateRoute element={<WritePost />} />}
+            />
+            <Route
+              path="profile/:id"
+              element={<PrivateRoute element={<Profile />} />}
+            />
+          </Route>
+        </Routes>
+      </Router>
+    </div>
   );
 };
 

@@ -128,12 +128,12 @@ const SinglePost = () => {
   const reactionCount = reactions.length;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 bg-cusLightBG rounded-lg shadow-lg flex-col md:flex-row gap-6">
+    <div className="max-w-7xl mx-auto p-6 my-6 bg-cusLightBG dark:bg-cusLightDarkBG rounded-lg shadow-lg flex flex-col lg:flex-row gap-6">
       {post && (
         <>
           {/* Main Post Content */}
-          <div className="">
-            <h1 className="text-5xl font-extrabold mb-6 text-center text-cusPrimaryColor">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-5xl font-extrabold mb-6 text-center text-cusPrimaryColor">
               {post.title}
             </h1>
             <img
@@ -151,30 +151,30 @@ const SinglePost = () => {
                 <p className="text-lg font-semibold text-cusPrimaryColor">
                   {post.author.fullname}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-500">
                   {formatDistanceToNow(new Date(post.createdAt), {
                     addSuffix: true,
                   })}
                 </p>
               </div>
             </div>
-            <p className="text-lg leading-relaxed text-gray-700 mb-8">
+            <p className="text-lg leading-relaxed text-gray-700 dark:text-cusSecondaryColor mb-8">
               {post.content}
             </p>
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center  mb-8">
               <button
                 onClick={handleAddOrRemoveReaction}
-                className="flex items-center text-3xl p-2 rounded-lg hover:bg-red-100 transition duration-300"
+                className="flex items-center text-3xl p-2 rounded-lg"
               >
                 <FaHeart
                   className={`transition duration-300 ${
-                    hasReacted ? "text-red-500" : "text-gray-400"
+                    hasReacted ? "text-red-500" : "text-gray-100"
                   }`}
                 />
-                <span className="ml-2 text-lg font-semibold">
-                  {reactionCount}
-                </span>
               </button>
+              <span className="ml-2 text-lg dark:text-cusPrimaryColor font-semibold">
+                by {reactionCount} peoples
+              </span>
             </div>
             <h2 className="text-3xl font-semibold mb-4 text-cusPrimaryColor">
               Comments
@@ -183,14 +183,14 @@ const SinglePost = () => {
               {comments.map((comment) => (
                 <li
                   key={comment._id}
-                  className="bg-white p-6 rounded-lg shadow-md flex flex-col gap-4"
+                  className="bg-white dark:bg-cusDarkBG p-6 rounded-lg shadow-md flex flex-col gap-4"
                 >
                   {editCommentId === comment._id ? (
                     <>
                       <textarea
                         value={editedComment}
                         onChange={(e) => setEditedComment(e.target.value)}
-                        className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                        className="w-full p-4 border dark:text-white border-gray-300 dark:bg-cusLightDarkBG dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
                         rows="3"
                       />
                       <div className="flex justify-end gap-4">
@@ -215,7 +215,7 @@ const SinglePost = () => {
                     <>
                       <div className="flex justify-between items-start">
                         <div className="flex flex-col gap-2">
-                          <p className="text-gray-800 text-lg">
+                          <p className="text-gray-800 dark:text-cusSecondaryLightColor text-lg">
                             {comment.content}
                           </p>
                           <p className="text-sm text-gray-500">
@@ -242,11 +242,11 @@ const SinglePost = () => {
                 </li>
               ))}
             </ul>
-            <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="bg-white dark:bg-cusDarkBG p-6 rounded-lg shadow-md">
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                className="w-full p-4 border dark:text-cusSecondaryLightColor border-gray-300 dark:border-gray-700 dark:bg-cusLightDarkBG rounded-lg focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
                 rows="3"
                 placeholder="Add a comment..."
               />
@@ -259,7 +259,7 @@ const SinglePost = () => {
             </div>
           </div>
           {/* You May Like Component on the Left */}
-          <div className="">
+          <div className="w-full lg:w-1/3">
             <YouMayLike currentPostId={id} tags={post.tags} />
           </div>
         </>

@@ -45,7 +45,9 @@ const BestBlogs = () => {
 
   return (
     <section className="mb-8">
-      <h2 className="text-2xl font-bold mb-4">Best Blogs</h2>
+      <h2 className="text-2xl  text-cusPrimaryColor dark:text-cusSecondaryLightColor font-bold mb-4">
+        Best Blogs
+      </h2>
       <div className="relative">
         <button
           className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-200 p-2 rounded-full shadow-md"
@@ -57,19 +59,22 @@ const BestBlogs = () => {
           {posts.map((post) => (
             <div
               key={post._id}
-              className="bg-cusLightBG dark:bg-cusDarkBG p-4 rounded shadow-md flex-none w-60"
+              className="bg-cusLightBG dark:bg-cusLightDarkBG p-4 rounded shadow-md flex-none  w-64 md:w-72 "
             >
               <img
                 src={post.image}
                 alt={post.title}
                 className="w-full h-40 object-cover mb-2 rounded"
               />
-              <h3 className="text-xl font-semibold">{post.title}</h3>
-              <p className="text-cusPrimaryColor">{post.excerpt}</p>
-              <span className="text-cusSecondaryColor">{post.date}</span>
+              <h3 className="  text-lg text-cusPrimaryColor dark:text-cusSecondaryColor  md:text-xl font-semibold">
+                {post.title}
+              </h3>
+              {/* <p className="text-cusPrimaryColor">{post.content}</p> */}
+              {/* <span className="text-cusSecondaryColor">{post.date}</span> */}
               <Link
                 to={`/post/${post._id}`}
-                className="text-blue-500 hover:underline mt-2 block"
+                // className="mt-6 pt-4 bg-cusPrimaryColor text-white py-2 px-4 rounded text-center w-32"
+                className="mt-2 py-2 px-4 bg-cusPrimaryColor text-white rounded flex justify-center w-32 "
               >
                 Read More
               </Link>

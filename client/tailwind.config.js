@@ -5,8 +5,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        cusDarkBG: "#120D31", //this is the custom color for dark background
-        cusLightDarkBG: "#302F4D", //this is the custom color for light dark background
+        cusDarkBG: "#1B1B25", //this is the custom color for dark background
+        cusLightDarkBG: "#252436", //this is the custom color for light dark background
         cusPrimaryColor: "#A57982", // this is the custom color for primary color
         cusSecondaryColor: "#B98EA7", // this is the custom color for secondary color
         cusSecondaryLightColor: "#F0D3F7", // this is the custom color for secondary light color

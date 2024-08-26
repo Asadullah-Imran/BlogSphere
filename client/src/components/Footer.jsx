@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  FaFacebookF,
-  FaInstagram,
-  FaLinkedinIn,
-  FaTwitter,
-} from "react-icons/fa";
+import { FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa";
 
 const Footer = () => {
   return (
@@ -32,7 +27,7 @@ const Footer = () => {
             <h3 className="text-lg font-bold mb-4">Follow Us</h3>
             <div className="flex space-x-4">
               <a
-                href="https://facebook.com"
+                href="https://www.facebook.com/profile.php?id=100080222101791"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -41,18 +36,9 @@ const Footer = () => {
                   className="hover:text-cusSecondaryLightColor"
                 />
               </a>
+
               <a
-                href="https://twitter.com"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <FaTwitter
-                  size={20}
-                  className="hover:text-cusSecondaryLightColor"
-                />
-              </a>
-              <a
-                href="https://instagram.com"
+                href="https://www.instagram.com/asadullah__imran/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -62,7 +48,7 @@ const Footer = () => {
                 />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/asadullah-imran/"
                 target="_blank"
                 rel="noopener noreferrer"
               >

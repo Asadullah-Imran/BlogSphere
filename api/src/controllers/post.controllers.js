@@ -177,11 +177,17 @@ export const updatePost = async (req, res, next) => {
 // Delete a post by ID
 export const deletePost = async (req, res, next) => {
   try {
-    const post = await Post.findByIdAndDelete(req.params.id);
+    const postId = req.params.id;
+    const post = await Post.findByIdAndDelete(postId);
 
     if (!post) {
       return next(new ApiError(404, "Post not found"));
     }
+    // Delete all comments associated with the post
+    await Comment.deleteMany({ post: postId });
+
+    // Delete all reactions associated with the post
+    await Reaction.deleteMany({ post: postId });
 
     res.status(200).json({
       success: true,

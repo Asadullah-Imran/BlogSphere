@@ -156,16 +156,14 @@ export const login = asyncHandler(async (req, res) => {
   if (!isMatch) {
     throw new ApiError(400, "Incorrect password");
   }
-
   if (!user.isVerified) {
     await verificationEmail(user);
     console.log("Email not verified");
     throw new ApiError(
-      400,
+      401,
       "A email sent to your email Please verify your email to login"
     );
   }
-
   //all check are done avobe now we will generate access and refresh token
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(

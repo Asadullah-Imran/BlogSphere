@@ -68,8 +68,8 @@ const WritePost = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-cusLightBG dark:bg-cusDarkBG rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-cusPrimaryColor">
+    <div className="max-w-4xl mx-auto p-4 my-5 bg-cusLightBG dark:bg-cusDarkBG rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
         {post ? "Edit Post" : "Create a New Post"}
       </h1>
       <form onSubmit={handleSubmit}>
@@ -118,12 +118,12 @@ const WritePost = () => {
             type="file"
             id="image"
             onChange={(e) => setImage(e.target.files[0])}
-            className="w-full p-2 border border-gray-300 rounded-lg dark:bg-cusLightDarkBG dark:text-cusSecondaryLightColor"
+            className="w-full p-2 border border-gray-300 rounded-lg dark:bg-cusLightDarkBG dark:text-cusSecondaryLightColor   file:mr-4 file:py-2 file:px-4 file:rounded-full file:border file:border-cusPrimaryColor file:text-sm file:font-semibold file:bg-cusLightBG dark:file:bg-cusLightDarkBG file:text-cusSecondaryColor dark:file:text-cusSecondaryLightColor hover:file:bg-cusSecondaryLightColor dark:hover:file:bg-cusSecondaryColor  "
             accept="image/*"
           />
         </div>
         <div className="mb-4">
-          <label className="block text-cusPrimaryColor dark:text-cusSecondaryLightColor font-medium mb-2">
+          <label className="block text-cusPrimaryColor dark:text-cusSecondaryLightColor font-medium mb-2   ">
             Tags
           </label>
           <div className="flex flex-wrap gap-2">

@@ -134,7 +134,7 @@ const Profile = () => {
           <img
             src={profilePic}
             alt="Profile"
-            className="rounded-full h-32 w-32 mx-auto mb-4"
+            className="rounded-full object-cover h-32 w-32 mx-auto mb-4"
           />
           {isCurrentUser && editMode && (
             <input

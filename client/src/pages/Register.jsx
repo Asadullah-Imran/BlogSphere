@@ -101,7 +101,7 @@ const Register = () => {
                   name="fullname"
                   value={formData.fullname}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded dark:bg-cusDarkBG border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                  className="w-full p-2 border rounded dark:bg-cusDarkBG  text-cusPrimaryColor dark:text-cusSecondaryLightColor border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
                   placeholder="Enter your fullname"
                 />
               </div>
@@ -115,7 +115,7 @@ const Register = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded dark:bg-cusDarkBG border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                  className="w-full p-2 border rounded dark:bg-cusDarkBG  text-cusPrimaryColor dark:text-cusSecondaryLightColor border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
                   placeholder="Enter your email"
                 />
               </div>
@@ -129,7 +129,7 @@ const Register = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded dark:bg-cusDarkBG border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                  className="w-full p-2 border rounded dark:bg-cusDarkBG  text-cusPrimaryColor dark:text-cusSecondaryLightColor border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
                   placeholder="Enter your password"
                 />
               </div>
@@ -157,7 +157,7 @@ const Register = () => {
             <p className="text-sm mt-4 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
               Already have an account?
               <Link
-                href="/login"
+                to="/login"
                 className="text-cusSecondaryColor dark:text-cusSecondaryLightColor ml-1 underline"
               >
                 Login

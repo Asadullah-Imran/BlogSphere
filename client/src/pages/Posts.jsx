@@ -55,10 +55,14 @@ const Posts = () => {
     : posts;
 
   return (
-    <div className="p-4">
-      <h1 className="text-3xl font-bold mb-6">All Posts</h1>
+    <div className="p-4 max-w-7xl mx-auto">
+      <h1 className="text-3xl text-cusPrimaryColor dark:text-cusSecondaryLightColor font-bold mb-6">
+        All Posts
+      </h1>
       <div className="mb-4">
-        <h2 className="text-xl font-semibold mb-2">Filter by Tag:</h2>
+        <h2 className="text-xl text-cusSecondaryColor font-semibold mb-2">
+          Filter by Tag:
+        </h2>
         <div className="flex flex-wrap gap-2">
           {fixedTags.map((tag) => (
             <button
@@ -86,45 +90,50 @@ const Posts = () => {
         {filteredPosts.map((post, index) => (
           <div
             key={post._id}
-            className={`flex flex-col md:flex-row gap-4 bg-cusLightBG p-6 rounded-lg ${
+            className={`flex flex-col md:flex-row gap-4 bg-cusLightBG dark:bg-cusLightDarkBG p-6 rounded-lg ${
               index % 2 === 0 ? "md:flex-row-reverse" : "md:flex-row"
             }`}
           >
             {/* First Section: Image with Overlapping Date, Reactions, and Comments */}
-            <div className="relative md:w-1/3">
+            <div className="relative md:w-2/5 my-6">
               <img
                 src={post.image}
                 alt={post.title}
-                className="max-w-full h-auto rounded-lg"
+                className="max-w-full h-full object-cover rounded-lg"
               />
               <div className="absolute top-2 left-2 bg-white bg-opacity-75 text-gray-700 text-xs px-2 py-1 rounded">
                 {format(new Date(post.createdAt), "PPP")}
               </div>
               <div className="absolute bottom-2 left-2 flex gap-4 text-white">
-                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded border border-gray-600">
                   <AiFillHeart /> {post.reactions.length}
                 </div>
-                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded">
+                <div className="flex items-center gap-1 bg-black bg-opacity-50 px-2 py-1 rounded border border-gray-600">
                   <FaRegComment /> {post.comments.length}
                 </div>
               </div>
             </div>
 
             {/* Second Section: Title, Author, Content, Tags */}
-            <div className="md:w-2/3 flex flex-col justify-between">
+            <div className="md:w-3/5 flex flex-col justify-between">
               <div>
-                <h2 className="text-2xl font-semibold text-cusDarkBG">
+                <h2 className="text-2xl font-semibold  text-cusPrimaryColor dark:text-cusSecondaryLightColor">
                   {post.title}
                 </h2>
-                <p className="text-cusSecondaryColor mt-2">
+                <Link
+                  to={`/profile/${post.author._id}`}
+                  className="text-cusSecondaryColor text-opacity-75 mt-2"
+                >
                   by {post.author.fullname}
-                </p>
-                <p className="text-cusPrimaryColor mt-4">
-                  {truncateText(post.content, 150)}
+                </Link>
+                <p className="text-cusPrimaryColor dark:text-cusSecondaryColor mt-4">
+                  {truncateText(post.content, 80)}
                 </p>
               </div>
               <div className="mt-4">
-                <h3 className="font-semibold">Tags:</h3>
+                <h3 className="font-semibold text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                  Tags:
+                </h3>
                 <div className="flex flex-wrap gap-2 mt-2">
                   {post.tags.map((tag) => (
                     <span

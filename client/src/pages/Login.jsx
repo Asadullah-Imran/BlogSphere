@@ -35,10 +35,12 @@ const Login = () => {
     } catch (err) {
       // setError("Login failed. Please check your credentials.");
       // notify(err.message, "failure");
-      if (err?.response?.data?.message) {
+      if (err?.response?.data?.message && err?.response?.status === 401) {
+        console.log("error-->", err);
+        console.log("error data-->", err?.response?.data);
         notify(err?.response?.data?.message, "info");
       } else {
-        notify("An unexpected error occurred. Please try again.", "failure");
+        notify(err?.response?.data?.message, "failure");
       }
     } finally {
       setIsLoading(false); // Stop loading
@@ -49,7 +51,7 @@ const Login = () => {
     <div className="bg-cusLightBG dark:bg-cusDarkBG min-h-screen flex items-center justify-center p-4">
       <div className="bg-white dark:bg-cusLightDarkBG p-6 rounded-lg shadow-md w-full max-w-md">
         <ToastContainer />
-        <h2 className="text-2xl font-bold mb-4 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+        <h2 className="text-2xl font-bold mb-4 text-cusPrimaryColor  dark:text-cusSecondaryLightColor">
           Login
         </h2>
 
@@ -63,7 +65,7 @@ const Login = () => {
             <input
               type="email"
               name="email"
-              className="w-full p-2 border rounded dark:bg-cusDarkBG border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+              className="w-full p-2 border rounded dark:bg-cusDarkBG  text-cusPrimaryColor dark:text-cusSecondaryLightColor border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
               placeholder="Enter your email"
               onChange={handleChange}
               required
@@ -77,7 +79,7 @@ const Login = () => {
             <input
               type="password"
               name="password"
-              className="w-full p-2 border rounded dark:bg-cusDarkBG border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+              className="w-full p-2 border rounded dark:bg-cusDarkBG  text-cusPrimaryColor dark:text-cusSecondaryLightColor border-cusPrimaryColor dark:border-cusSecondaryColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
               placeholder="Enter your password"
               onChange={handleChange}
               required
