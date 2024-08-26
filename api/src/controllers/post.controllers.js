@@ -55,16 +55,16 @@ export const createPost = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid tags format");
   }
 
-  let image;
-  if (req.file && req.file.path) {
-    const uploadResponse = await uploadOnCloudinary(req.file.path);
-    if (!uploadResponse) {
-      throw new ApiError(500, "Failed to upload image");
-    }
-    image = uploadResponse.secure_url; // Save only the secure URL or other required field
-  } else {
-    throw new ApiError(408, "Image is required");
-  }
+  // let image;
+  // if (req.file && req.file.path) {
+  //   const uploadResponse = await uploadOnCloudinary(req.file.path);
+  //   if (!uploadResponse) {
+  //     throw new ApiError(500, "Failed to upload image");
+  //   }
+  //   image = uploadResponse.secure_url; // Save only the secure URL or other required field
+  // } else {
+  //   throw new ApiError(408, "Image is required");
+  // }
 
   // const post = new Post({
   //   title,
