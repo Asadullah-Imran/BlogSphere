@@ -42,7 +42,7 @@ const Navbar = () => {
     const firstName = nameParts[0];
 
     // Ensure the name displayed is at least 3 characters long
-    return lastName.length >= 3 ? lastName : firstName;
+    return firstName.length >= 3 ? firstName : lastName;
   };
 
   return (
