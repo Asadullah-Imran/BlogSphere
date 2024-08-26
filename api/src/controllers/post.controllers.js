@@ -64,7 +64,7 @@ export const createPost = async (req, res, next) => {
       }
       image = uploadResponse.secure_url; // Save only the secure URL or other required field
     } else {
-      throw new ApiError(400, "Image is required");
+      throw new ApiError(408, "Image is required");
     }
 
     const post = new Post({

@@ -61,6 +61,7 @@ const WritePost = () => {
       navigate(`/post/${res.data.data._id}`);
     } catch (error) {
       console.error("Error creating/updating post:", error.message);
+      console.log("ERROR IS-->", error);
     } finally {
       setIsLoading(false); // Set loading state to false
     }
