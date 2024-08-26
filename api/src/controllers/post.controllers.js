@@ -74,6 +74,10 @@ export const createPost = asyncHandler(async (req, res, next) => {
     author,
   });
 
+  if (!post) {
+    throw new ApiError(400, "Failed to create post");
+  }
+
   await post.save();
   res.status(201).json({
     success: true,
