@@ -44,16 +44,16 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 // };
 
 export const createPost = asyncHandler(async (req, res) => {
-  const { title, content, tags } = req.body;
+  const { title, content } = req.body;
   const author = "66c8e298d5bdf18dacdcd7c8"; // Replace with dynamic author ID
   // const author = req.user._id; // Assuming user info is available in req.user
   // Parse the tags JSON string back into an array
-  let parsedTags = [];
-  try {
-    parsedTags = JSON.parse(tags);
-  } catch (error) {
-    throw new ApiError(400, "Invalid tags format");
-  }
+  // let parsedTags = [];
+  // try {
+  //   parsedTags = JSON.parse(tags);
+  // } catch (error) {
+  //   throw new ApiError(400, "Invalid tags format");
+  // }
 
   // let image;
   // if (req.file && req.file.path) {
@@ -66,20 +66,20 @@ export const createPost = asyncHandler(async (req, res) => {
   //   throw new ApiError(408, "Image is required");
   // }
 
-  // const post = new Post({
-  //   title,
-  //   content,
-  //   image, // Save the secure URL of the uploaded image
-  //   tags: parsedTags,
-  //   author,
-  // });
+  const post = new Post({
+    title,
+    content,
+    // image, // Save the secure URL of the uploaded image
+    // tags: parsedTags,
+    author,
+  });
 
-  // if (!post) {
-  //   throw new ApiError(400, "Failed to create post");
-  // }
+  if (!post) {
+    throw new ApiError(400, "Failed to create post");
+  }
 
-  // await post.save();
-  res.status(201).json(new ApiResponse(201, {}, "Post created successfully"));
+  await post.save();
+  res.status(201).json(new ApiResponse(201, post, "Post created successfully"));
 });
 
 // Get all posts
