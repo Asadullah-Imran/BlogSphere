@@ -21,7 +21,8 @@ import { upload } from "../middlewares/multer.middleware.js";
 const router = express.Router();
 
 // Define routes
-router.post("/create", createPost);
+// router.post("/create", createPost);
+router.post("/create",  upload.single("image"), createPost);
 // router.post("/", verifyJWT, upload.single("image"), createPost);
 router.get("/", getPosts);
 router.get("/user/:userId", getUserPosts);
