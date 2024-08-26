@@ -1,7 +1,7 @@
 import { formatDistanceToNow } from "date-fns"; // For time ago formatting
 import React, { useContext, useEffect, useState } from "react";
 import { FaEdit, FaHeart, FaTrashAlt } from "react-icons/fa"; // Import icons
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
 import YouMayLike from "../components/YouMayLike";
 import { AuthContext } from "../context/authContext";
@@ -145,12 +145,15 @@ const SinglePost = () => {
               <img
                 src={post.author.profilePic}
                 alt={post.author.fullname}
-                className="w-12 h-12 rounded-full"
+                className="w-12 h-12 object-cover rounded-full"
               />
               <div>
-                <p className="text-lg font-semibold text-cusPrimaryColor">
+                <Link
+                  to={`/profile/${post.author._id}`}
+                  className="text-lg font-semibold text-cusPrimaryColor"
+                >
                   {post.author.fullname}
-                </p>
+                </Link>
                 <p className="text-sm text-gray-600 dark:text-gray-500">
                   {formatDistanceToNow(new Date(post.createdAt), {
                     addSuffix: true,
