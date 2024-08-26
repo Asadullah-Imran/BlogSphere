@@ -43,7 +43,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 //   }
 // };
 
-export const createPost = async (req, res, next) => {
+export const createPost = asyncHandler( (req, res, next) => {
   try {
     const { title, content, tags } = req.body;
     // const author = "66c0af684ad4a052f2aaf590"; // Replace with dynamic author ID
@@ -80,11 +80,8 @@ export const createPost = async (req, res, next) => {
       success: true,
       data: post,
     });
-  } catch (error) {
-    console.error("Error in createPost:", error);
-    next(new ApiError(400, "Failed to create post"));
-  }
-};
+  } 
+});
 
 // Get all posts
 export const getPosts = asyncHandler(async (req, res, next) => {
