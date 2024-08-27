@@ -45,8 +45,8 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const createPost = asyncHandler(async (req, res) => {
   const { title, content } = req.body;
-  // const author = "66c8e298d5bdf18dacdcd7c8"; // Replace with dynamic author ID
-  const author = req.user._id; // Assuming user info is available in req.user
+  const author = "66c8e298d5bdf18dacdcd7c8"; // Replace with dynamic author ID
+  // const author = req.user._id; // Assuming user info is available in req.user
   // Parse the tags JSON string back into an array
   let parsedTags = [];
   try {
