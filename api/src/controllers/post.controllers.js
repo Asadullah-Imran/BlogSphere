@@ -66,17 +66,22 @@ export const createPost = asyncHandler(async (req, res) => {
   //   throw new ApiError(408, "Image is required");
   // }
 
-  const post = new Post({
+  // const post = new Post({
+  //   title,
+  //   content,
+  //   author,
+  // });
+
+  // if (!post) {
+  //   throw new ApiError(400, "Failed to create post");
+  // }
+
+  // await post.save();
+  const post = {
     title,
     content,
     author,
-  });
-
-  if (!post) {
-    throw new ApiError(400, "Failed to create post");
-  }
-
-  await post.save();
+  };
   res.status(201).json(new ApiResponse(201, post, "Post created successfully"));
 });
 
