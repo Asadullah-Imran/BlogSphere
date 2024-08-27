@@ -48,12 +48,12 @@ export const createPost = asyncHandler(async (req, res) => {
   const author = "66c8e298d5bdf18dacdcd7c8"; // Replace with dynamic author ID
   // const author = req.user._id; // Assuming user info is available in req.user
   // Parse the tags JSON string back into an array
-  let parsedTags = [];
-  try {
-    parsedTags = JSON.parse(tags);
-  } catch (error) {
-    throw new ApiError(400, "Invalid tags format");
-  }
+  // let parsedTags = [];
+  // try {
+  //   parsedTags = JSON.parse(tags);
+  // } catch (error) {
+  //   throw new ApiError(400, "Invalid tags format");
+  // }
 
   let image;
   if (req.file && req.file.path) {
@@ -70,6 +70,7 @@ export const createPost = asyncHandler(async (req, res) => {
     title,
     content,
     author,
+    image,
   });
 
   if (!post) {
