@@ -23,7 +23,7 @@ const router = express.Router();
 // Define routes
 // router.post("/create", createPost);
 // router.post("/create", createPost);
-router.post("/", upload.single("image"), createPost);
+router.post("/", createPost);
 // router.post("/", verifyJWT, upload.single("image"), createPost);
 router.get("/", getPosts);
 router.get("/user/:userId", getUserPosts);
