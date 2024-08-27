@@ -71,6 +71,9 @@ export const createPost = asyncHandler(async (req, res) => {
     content: content,
     author: author,
   });
+  if (post) {
+    throw new ApiError(400, post);
+  }
 
   if (!post) {
     throw new ApiError(400, "Failed to create post");
