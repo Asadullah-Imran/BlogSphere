@@ -67,9 +67,9 @@ export const createPost = asyncHandler(async (req, res) => {
   // }
 
   const post = new Post({
-    title,
-    content,
-    author,
+    title: title,
+    content: content,
+    author: author,
   });
 
   if (!post) {
