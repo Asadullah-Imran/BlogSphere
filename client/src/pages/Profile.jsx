@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { AuthContext } from "../context/authContext";
@@ -229,7 +229,7 @@ const Profile = () => {
                 <div className="mt-2 flex justify-between items-center">
                   <Link
                     to={`/post/${post._id}`}
-                    className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
+                    className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor w-full md:w-auto mb-2 md:mb-0"
                   >
                     Read More
                   </Link>
@@ -238,13 +238,13 @@ const Profile = () => {
                       <Link
                         to={`/create-post?postId=${post._id}`}
                         state={post}
-                        className="px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor"
+                        className="px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor w-full md:w-auto mb-2 md:mb-0"
                       >
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDeletePost(post._id)}
-                        className="ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+                        className="ml-0 md:ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full md:w-auto"
                       >
                         Delete
                       </button>

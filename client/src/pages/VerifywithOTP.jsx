@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const VerifywithOTP = () => {
@@ -37,7 +37,7 @@ const VerifywithOTP = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
-          <div className="flex justify-between mb-4">
+          <div className="flex gap-2 justify-between mb-4">
             {otp.map((digit, index) => (
               <input
                 key={index}

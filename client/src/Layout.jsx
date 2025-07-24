@@ -1,14 +1,26 @@
-import React from "react";
+// src/Layout.js
+import React, { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
+
 const Layout = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
-    <>
-      <Navbar />
-      <Outlet />
+    <div className="flex flex-col min-h-screen">
+      <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+      <div className="flex flex-1">
+        <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+        <main className="flex-1 transition-all duration-300 ">
+          <div className="">
+            <Outlet />
+          </div>
+        </main>
+      </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
