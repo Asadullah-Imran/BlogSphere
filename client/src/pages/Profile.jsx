@@ -1,59 +1,74 @@
 import { useContext, useEffect, useState } from "react";
+import {
+  FaEdit,
+  FaFileUpload,
+  FaSave,
+  FaTimes,
+  FaTrash,
+  FaUserAlt,
+} from "react-icons/fa";
 import { Link, useParams } from "react-router-dom";
 import ConfirmationModal from "../components/ConfirmationModal";
+import SkeletonCard from "../components/SkeletonCard";
 import { AuthContext } from "../context/authContext";
-import { deletePost, getUserPosts } from "../services/postServices";
+import { deletePost } from "../services/postServices";
 import { getUserProfile, updateUserData } from "../services/userServices";
 
 const Profile = () => {
   const { id } = useParams();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const { user, setUser } = useContext(AuthContext);
-  const isCurrentUser = user && id === user._id; // Check if viewing own profile
+  const isCurrentUser = user && id === user._id;
   const [editMode, setEditMode] = useState(false);
-  // const [profileData, setProfileData] = useState({
-  //   fullname: user ? user.fullname : "",
-  //   email: user ? user.email : "",
-  // });
-  // const [profilePic, setProfilePic] = useState(
-  //   user && user.profilePic ? user.profilePic : "/profilePicture.jpg"
-  // );
   const [profileData, setProfileData] = useState({
     fullname: "",
     email: "",
+    bio: "",
   });
-  const [profilePic, setProfilePic] = useState("/profilePicture.jpg");
+  const [profilePic, setProfilePic] = useState(null);
   const [posts, setPosts] = useState([]);
-
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal
-  const [postIdToDelete, setPostIdToDelete] = useState(""); // State to store post ID to delete
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [postIdToDelete, setPostIdToDelete] = useState("");
+  const [stats, setStats] = useState({ posts: 0, reactions: 0, comments: 0 });
 
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
+        setIsLoading(true);
         const res = await getUserProfile(id);
-        console.log("Profile Data: ", res.data.data);
+        const userData = res.data.data;
         setProfileData({
-          fullname: res.data.data.fullname,
-          email: res.data.data.email,
+          fullname: userData.fullname,
+          email: userData.email,
+          bio: userData.bio || "No bio yet",
         });
-        setProfilePic(res.data.data.profilePic || "/profilePicture.jpg");
+
+        // Calculate stats
+        let totalReactions = 0;
+        let totalComments = 0;
+
+        userData.posts.forEach((post) => {
+          totalReactions += post.reactions.length;
+          totalComments += post.comments.length;
+        });
+
+        setStats({
+          posts: userData.posts.length,
+          reactions: totalReactions,
+          comments: totalComments,
+        });
+
+        setPosts(userData.posts);
       } catch (error) {
         console.log("Failed to fetch Profile Data: ", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    const fetchPosts = async () => {
-      try {
-        const res = await getUserPosts(id);
-        setPosts(res.data.data);
-      } catch (error) {
-        console.log("Failed to fetch Posts: ", error);
-      }
-    };
     fetchProfileData();
-    fetchPosts();
-  }, [id]);
+  }, [id, editMode]);
 
   const handleInputChange = (e) => {
     setProfileData({
@@ -67,16 +82,15 @@ const Profile = () => {
     if (file && file.size < 5000000) {
       setProfilePic(file);
     } else {
-      window.alert("File is too large or not an image.");
       console.error("File is too large or not an image.");
     }
   };
 
   const handleSave = async () => {
-    setIsLoading(true);
-
+    setIsUpdating(true);
     const formData = new FormData();
     formData.append("fullname", profileData.fullname);
+    formData.append("bio", profileData.bio);
 
     if (profilePic) {
       formData.append("profilePic", profilePic);
@@ -89,18 +103,15 @@ const Profile = () => {
           ...user,
           profilePic: response.data.data.profilePic,
           fullname: response.data.data.fullname,
+          bio: response.data.data.bio,
         });
       }
-
-      setProfilePic(response.data.data.profilePic);
-      setProfileData({ ...profileData, fullname: response.data.data.fullname });
-      console.log("successfully updated data");
-      console.log(response);
+      setEditMode(false);
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsUpdating(false);
     }
-    setIsLoading(false);
-    setEditMode(false);
   };
 
   const handleDeletePost = (postId) => {
@@ -111,180 +122,349 @@ const Profile = () => {
   const handleConfirmDelete = async () => {
     try {
       await deletePost(postIdToDelete);
-      setPosts(posts.filter((post) => post._id !== postIdToDelete)); // Remove the deleted post from the state
-
+      setPosts(posts.filter((post) => post._id !== postIdToDelete));
       setIsModalOpen(false);
-      console.log("Post deleted successfully");
+      // Update stats
+      setStats((prev) => ({ ...prev, posts: prev.posts - 1 }));
     } catch (err) {
       console.log("Failed to delete post: ", err);
     }
   };
+
   const handleCancelDelete = () => {
     setIsModalOpen(false);
   };
 
-  // const handleEditPost = (postId) => {
-  //   console.log("Edit post with ID: ", postId);
-  // };
-
   return (
-    <div className="container mx-auto p-4">
-      <div className="bg-cusLightBG p-6 rounded-lg shadow-md dark:bg-cusDarkBG">
-        <div className="text-center">
-          <img
-            src={profilePic}
-            alt="Profile"
-            className="rounded-full object-cover h-32 w-32 mx-auto mb-4"
-          />
-          {isCurrentUser && editMode && (
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleProfilePictureChange}
-              className="mb-4"
-            />
-          )}
-          <h2 className="text-2xl font-semibold text-cusPrimaryColor dark:text-cusSecondaryColor">
-            {profileData.fullname}
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            {profileData.email}
-          </p>
-        </div>
-        <div className="mt-6">
-          {isCurrentUser && editMode ? (
-            <>
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 dark:text-gray-300 mb-2"
-                  htmlFor="username"
-                >
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  name="fullname"
-                  value={profileData.fullname}
-                  onChange={handleInputChange}
-                  className="w-full p-2 border rounded dark:bg-cusLightDarkBG dark:text-gray-200"
-                />
-              </div>
-              <button
-                onClick={handleSave}
-                disabled={isLoading} // Disable button while loading
-                className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor"
-              >
-                {isLoading ? (
-                  <div className="flex justify-center items-center">
-                    <div className="w-5 h-5 border-4 border-t-transparent border-white rounded-full animate-spin-slow"></div>
-                    <span className="ml-2">Saving...</span>
+    <div className="max-w-7xl mx-auto p-4">
+      {/* Profile Header */}
+      <div className="bg-white dark:bg-cusLightDarkBG rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-gradient-to-r from-cusPrimaryColor to-cusSecondaryColor h-32"></div>
+
+        <div className="px-6 pb-8 -mt-16 relative">
+          <div className="flex flex-col md:flex-row items-start md:items-center">
+            <div className="relative group">
+              {isLoading ? (
+                <div className="bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-cusLightDarkBG rounded-full w-32 h-32" />
+              ) : (
+                <>
+                  {user?.profilePic ? (
+                    <img
+                      src={user.profilePic}
+                      alt="Profile"
+                      className="border-4 border-white dark:border-cusLightDarkBG rounded-full w-32 h-32 object-cover"
+                    />
+                  ) : (
+                    <div className="bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-cusLightDarkBG rounded-full w-32 h-32 flex items-center justify-center">
+                      <FaUserAlt className="text-5xl text-gray-400" />
+                    </div>
+                  )}
+
+                  {editMode && (
+                    <label className="absolute bottom-2 right-2 bg-white dark:bg-cusDarkBG p-2 rounded-full shadow-lg cursor-pointer group-hover:opacity-100 transition-opacity">
+                      <FaFileUpload className="text-cusPrimaryColor dark:text-cusSecondaryColor" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleProfilePictureChange}
+                        className="hidden"
+                      />
+                    </label>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="mt-4 md:mt-0 md:ml-6 flex-1">
+              {isLoading ? (
+                <>
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-3"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between items-start">
+                    <h1
+                      className="text-3xl font-bold text-white dark:text-white"
+                      style={{ textTransform: "capitalize" }}
+                    >
+                      {profileData.fullname}
+                    </h1>
+
+                    {isCurrentUser && !editMode && (
+                      <button
+                        onClick={() => setEditMode(true)}
+                        className="flex items-center px-4 py-2 bg-cusPrimaryColor hover:bg-cusSecondaryColor text-white rounded-lg transition-colors"
+                      >
+                        <FaEdit className="mr-2" />
+                        Edit Profile
+                      </button>
+                    )}
                   </div>
-                ) : (
-                  "Save"
-                )}
-              </button>
-              <button
-                onClick={() => setEditMode(false)}
-                className="ml-4 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-400 dark:hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-            </>
-          ) : (
-            isCurrentUser && (
-              <button
-                onClick={() => setEditMode(true)}
-                className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor transition-colors duration-300"
-              >
+
+                  <p className="text-gray-600 dark:text-gray-400 mt-1">
+                    {profileData.email}
+                  </p>
+
+                  <p className="mt-3 text-cusPrimaryColor dark:text-cusSecondaryColor">
+                    {profileData.bio}
+                  </p>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Stats */}
+          {!isLoading && (
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-cusLightBG dark:bg-cusDarkBG p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                  {stats.posts}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400">Posts</div>
+              </div>
+              <div className="bg-cusLightBG dark:bg-cusDarkBG p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                  {stats.reactions}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400">
+                  Reactions
+                </div>
+              </div>
+              <div className="bg-cusLightBG dark:bg-cusDarkBG p-4 rounded-xl text-center">
+                <div className="text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                  {stats.comments}
+                </div>
+                <div className="text-gray-600 dark:text-gray-400">Comments</div>
+              </div>
+            </div>
+          )}
+
+          {/* Edit Form */}
+          {editMode && (
+            <div className="mt-8 bg-cusLightBG dark:bg-cusDarkBG p-6 rounded-xl">
+              <h2 className="text-xl font-semibold mb-4 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
                 Edit Profile
-              </button>
-            )
+              </h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    name="fullname"
+                    value={profileData.fullname}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cusLightDarkBG text-cusPrimaryColor dark:text-cusSecondaryLightColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2 text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={profileData.bio}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-cusLightDarkBG text-cusPrimaryColor dark:text-cusSecondaryLightColor focus:outline-none focus:ring-2 focus:ring-cusPrimaryColor"
+                    rows="3"
+                  />
+                </div>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => setEditMode(false)}
+                    className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors flex items-center"
+                  >
+                    <FaTimes className="mr-2" />
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={isUpdating}
+                    className="px-4 py-2 bg-cusPrimaryColor hover:bg-cusSecondaryColor text-white rounded-lg transition-colors flex items-center"
+                  >
+                    {isUpdating ? (
+                      <>
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <FaSave className="mr-2" />
+                        Save Changes
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
-      <div className="mt-8">
-        <h3 className="text-xl font-semibold text-cusPrimaryColor dark:text-cusSecondaryColor mb-4">
-          {isCurrentUser ? "Your Posts" : "Posts by " + profileData.fullname}
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {posts.length > 0 ? (
-            posts.map((post) => (
+
+      {/* User Posts */}
+      <div className="mt-10">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryLightColor">
+            {isCurrentUser ? "Your Posts" : `Posts by ${profileData.fullname}`}
+          </h2>
+          {isCurrentUser && (
+            <Link
+              to="/create-post"
+              className="px-4 py-2 bg-cusPrimaryColor hover:bg-cusSecondaryColor text-white rounded-lg transition-colors flex items-center"
+            >
+              <FaEdit className="mr-2" />
+              Create New Post
+            </Link>
+          )}
+        </div>
+
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <SkeletonCard key={i} />
+            ))}
+          </div>
+        ) : posts.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
               <div
                 key={post._id}
-                className="bg-cusLightBG p-4 rounded shadow-md dark:bg-cusLightDarkBG"
+                className="bg-white dark:bg-cusLightDarkBG rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
               >
                 {post.image && (
-                  <img
-                    src={post.image}
-                    alt={post.title}
-                    className="w-full h-40 object-cover rounded-md mb-4"
-                  />
-                )}
-                <h4 className="text-lg font-semibold text-cusPrimaryColor dark:text-cusSecondaryColor">
-                  {post.title}
-                </h4>
-                <p className="text-gray-600 dark:text-gray-400">
-                  {post.content.substring(0, 100)}...
-                </p>
-                <div className="mt-2 flex justify-between items-center">
-                  <Link
-                    to={`/post/${post._id}`}
-                    className="px-4 py-2 bg-cusPrimaryColor text-white rounded hover:bg-cusSecondaryColor w-full md:w-auto mb-2 md:mb-0"
-                  >
-                    Read More
-                  </Link>
-                  {isCurrentUser && (
-                    <div>
-                      <Link
-                        to={`/create-post?postId=${post._id}`}
-                        state={post}
-                        className="px-4 py-2 bg-cusSecondaryColor text-white rounded hover:bg-cusSecondaryLightColor w-full md:w-auto mb-2 md:mb-0"
-                      >
-                        Edit
-                      </Link>
-                      <button
-                        onClick={() => handleDeletePost(post._id)}
-                        className="ml-0 md:ml-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 w-full md:w-auto"
-                      >
-                        Delete
-                      </button>
+                  <div className="relative h-48 overflow-hidden">
+                    <img
+                      src={post.image}
+                      alt={post.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 left-3 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
+                      {new Date(post.createdAt).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </div>
-                  )}
-                </div>
-                <div className="mt-2">
-                  <span className="text-gray-600 dark:text-gray-400">
-                    {post.comments.length} Comments
-                  </span>
-                  <span className="ml-4 text-gray-600 dark:text-gray-400">
-                    {post.reactions.length} Reactions
-                  </span>
-                </div>
-                <div className="mt-2">
-                  {post.tags.length > 0 &&
-                    post.tags.map((tag, index) => (
+                  </div>
+                )}
+
+                <div className="p-5">
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {post.tags.slice(0, 3).map((tag, index) => (
                       <span
                         key={index}
-                        className="inline-block bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-300 text-xs px-2 py-1 rounded-full mr-2"
+                        className="px-2 py-1 bg-cusSecondaryLightColor text-cusDarkBG text-xs rounded"
                       >
                         {tag}
                       </span>
                     ))}
+                  </div>
+
+                  <h3 className="text-xl font-bold text-cusPrimaryColor dark:text-cusSecondaryLightColor line-clamp-2 mb-3">
+                    {post.title}
+                  </h3>
+
+                  <p className="text-cusPrimaryColor dark:text-cusSecondaryColor mb-4 line-clamp-3">
+                    {post.content}
+                  </p>
+
+                  <div className="flex justify-between items-center text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    <div className="flex items-center">
+                      <span className="mr-4">❤️ {post.reactions.length}</span>
+                      <span>💬 {post.comments.length}</span>
+                    </div>
+                    <span>
+                      📖 {Math.ceil(post.content.length / 1000)} min read
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between gap-2">
+                    <Link
+                      to={`/post/${post._id}`}
+                      className="flex-1 text-center py-2 px-4 bg-cusPrimaryColor hover:bg-cusSecondaryColor text-white rounded-lg transition-colors"
+                    >
+                      Read More
+                    </Link>
+
+                    {isCurrentUser && (
+                      <div className="flex gap-2">
+                        <Link
+                          to={`/create-post?postId=${post._id}`}
+                          state={post}
+                          className="p-2 bg-gray-200 dark:bg-gray-700 text-cusPrimaryColor dark:text-cusSecondaryLightColor rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                          title="Edit post"
+                        >
+                          <FaEdit />
+                        </Link>
+                        <button
+                          onClick={() => handleDeletePost(post._id)}
+                          className="p-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                          title="Delete post"
+                        >
+                          <FaTrash />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            ))
-          ) : (
-            <p className="text-gray-600 dark:text-gray-400">
+            ))}
+          </div>
+        ) : (
+          <div className="bg-cusLightBG dark:bg-cusLightDarkBG rounded-xl p-10 text-center">
+            <div className="text-5xl mb-4 text-gray-300 dark:text-gray-600">
+              📝
+            </div>
+            <h3 className="text-xl font-semibold text-cusPrimaryColor dark:text-cusSecondaryLightColor mb-2">
+              No posts yet
+            </h3>
+            <p className="text-cusPrimaryColor dark:text-cusSecondaryColor mb-6">
               {isCurrentUser
-                ? "You have no posts yet."
-                : "This user has no posts yet."}
+                ? "You haven't created any posts yet. Start sharing your thoughts!"
+                : "This user hasn't published any posts yet."}
             </p>
-          )}
-        </div>
+            {isCurrentUser && (
+              <Link
+                to="/create-post"
+                className="inline-block px-6 py-3 bg-cusPrimaryColor hover:bg-cusSecondaryColor text-white rounded-lg transition-colors"
+              >
+                Create Your First Post
+              </Link>
+            )}
+          </div>
+        )}
       </div>
+
       <ConfirmationModal
         isOpen={isModalOpen}
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
+        title="Delete Post"
+        message="Are you sure you want to delete this post? This action cannot be undone."
       />
     </div>
   );
