@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_URL = "/api/notifications/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8001";
+const API_URL = `${API_BASE_URL}/api/v1/notifications/`;
 
 export const getNotifications = (userId) =>
   axios.get(`${API_URL}user/${userId}`);

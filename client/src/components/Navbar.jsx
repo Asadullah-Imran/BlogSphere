@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import { FiLogOut, FiMenu, FiMoon, FiSun, FiX } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/logo.png";
 import { AuthContext } from "../context/authContext";
 import { logout } from "../services/authenticationsServices";
 
@@ -54,9 +55,14 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
         </button>
         <Link
           to="/"
-          className="text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryColor tracking-tight"
+          className="flex items-center gap-2 text-2xl font-bold text-cusPrimaryColor dark:text-cusSecondaryColor tracking-tight"
         >
-          BlogSphere
+          <img
+            src={logo}
+            alt="BlogSphere Logo"
+            className="h-8 w-8 object-contain"
+          />
+          <span>BlogSphere</span>
         </Link>
       </div>
 

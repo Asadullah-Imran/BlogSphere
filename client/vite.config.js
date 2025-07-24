@@ -7,7 +7,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "https://blog-app-two-flax.vercel.app",
+        target: "https://blogsphere-7dt4.onrender.com",
         changeOrigin: true,
         secure: false,
       },

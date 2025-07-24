@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8001/api/v1/";
-// Update the API_URL if you are running the backend locally
-// const API_URL = "http://localhost:5000/api/v1/";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8001";
+const API_URL = `${API_BASE_URL}/api/v1/`;
 
 export const createPost = (postData) => {
   return axios.post(`${API_URL}posts`, postData, {
