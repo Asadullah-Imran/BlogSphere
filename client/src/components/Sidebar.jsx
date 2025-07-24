@@ -36,7 +36,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
         top-16 md:top-16
         left-0
         z-40
-        w-64
+        w-64 min-w-[220px]
         bg-cusLightBG dark:bg-cusLightDarkBG
         shadow-lg
         transform
