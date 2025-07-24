@@ -1,9 +1,11 @@
+// src/index.js
 import dotenv from "dotenv";
 import app from "./app.js";
 import connectDB from "./db/db.js";
+console.log("index.js");
+dotenv.config(); // Always first
 
-// Configure dotenv
-dotenv.config();
+console.log("index.js");
 
 const PORT = process.env.PORT || 8001;
 

@@ -36,20 +36,16 @@ export const updateUser = asyncHandler(async (req, res) => {
   // }
 
   //Handle profile picture upload if a file is provided
-
   if (req.file) {
-    const uploadResult = await uploadOnCloudinary(req.file.path);
-
-    if (uploadResult) {
-      console.log("Upload response is -->", uploadResult);
-      profilePicUrl = uploadResult.secure_url;
+    const imageUrl = await uploadOnCloudinary(req.file.buffer);
+    if (imageUrl) {
+      profilePicUrl = imageUrl;
     } else {
       throw new ApiError(500, "Failed to upload profile picture");
     }
   }
 
   //Find the user and update the fields
-
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { fullname, email, ...(profilePicUrl && { profilePic: profilePicUrl }) },
