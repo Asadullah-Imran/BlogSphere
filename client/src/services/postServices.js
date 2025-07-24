@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://blog-app-eta-orcin.vercel.app/api/v1/";
+const API_URL = "http://localhost:8001/api/v1/";
 // Update the API_URL if you are running the backend locally
 // const API_URL = "http://localhost:5000/api/v1/";
 

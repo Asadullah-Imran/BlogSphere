@@ -7,8 +7,7 @@ const app = express();
 
 // Set up CORS options
 const corsOptions = {
-  origin: ["https://likhalikhi.vercel.app"], // Allow only your frontend domain
-  // origin: ["http://localhost:5173"], // Allow only your frontend domain
+  origin: ["https://likhalikhi.vercel.app", "http://localhost:5173"], // Allow production and local frontend
   optionsSuccessStatus: 200, // Some legacy browsers choke on 204
   credentials: true, // Allow credentials (cookies, authorization headers, etc.)
 };

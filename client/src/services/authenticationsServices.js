@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "https://blog-app-eta-orcin.vercel.app/api/v1/auth/";
+const API_URL = "http://localhost:8001/api/v1/auth/";
 // const API_URL = "http://localhost:5000/api/v1/auth/";
 
 export const register = (credentials) => {
@@ -27,7 +27,7 @@ export const refreshToken = () => axios.post(`${API_URL}refresh-token`);
 export const resendVerificationEmail = async (credentials) => {
   try {
     const response = await axios.post(
-      "http://localhost:5000/api/v1/auth/resend-verification-email",
+      "http://localhost:8001/api/v1/auth/resend-verification-email",
       credentials
     );
     return response.data;
