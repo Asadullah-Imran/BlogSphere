@@ -13,10 +13,8 @@ const Layout = () => {
       <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       <div className="flex flex-1">
         <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
-        <main className="flex-1 transition-all duration-300 ">
-          <div className="">
-            <Outlet />
-          </div>
+        <main className="flex-1 transition-all duration-300 overflow-x-hidden">
+          <Outlet />
         </main>
       </div>
       <Footer />
