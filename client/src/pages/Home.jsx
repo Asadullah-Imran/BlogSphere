@@ -46,7 +46,7 @@ const Home = () => {
       <section className="mb-12">
         <div className="bg-gradient-to-r from-cusPrimaryColor to-cusSecondaryColor rounded-2xl p-4 sm:p-8 text-white">
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
-            Welcome to BlogSphere
+            Welcome to likhalikhi
           </h1>
           <p className="text-base sm:text-xl mb-6 max-w-2xl">
             Discover, share, and connect with a community of passionate writers

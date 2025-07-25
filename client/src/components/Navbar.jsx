@@ -59,10 +59,10 @@ const Navbar = ({ sidebarOpen, setSidebarOpen }) => {
         >
           <img
             src={logo}
-            alt="BlogSphere Logo"
+            alt="likhalikhi Logo"
             className="h-8 w-8 object-contain"
           />
-          <span>BlogSphere</span>
+          <span>likhalikhi</span>
         </Link>
       </div>
 

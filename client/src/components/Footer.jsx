@@ -18,11 +18,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div>
             <h3 className="text-xl font-bold mb-4 text-cusPrimaryColor dark:text-cusSecondaryColor">
-              BlogSphere
+              likhalikhi
             </h3>
             <p className="text-sm mb-4">
               A platform to share your thoughts, ideas, and stories. Connect
-              with others and explore the world of blogging!
+              with others and explore the world of likhalikhi!
             </p>
             <div className="flex space-x-4">
               {[
@@ -106,7 +106,7 @@ const Footer = () => {
 
         <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col md:flex-row justify-between items-center">
           <div className="text-xs text-cusSecondaryColor mb-4 md:mb-0">
-            &copy; {currentYear} BlogSphere. All Rights Reserved.
+            &copy; {currentYear} likhalikhi. All Rights Reserved.
           </div>
           <div className="flex items-center text-sm">
             <span>Made with</span>
